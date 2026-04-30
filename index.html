@@ -62,9 +62,9 @@
             <div class="text-right">
                 <div class="flex items-center justify-end gap-2 text-slate-400 mb-2">
                     <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                    <span class="text-[10px] font-bold uppercase">Sistema Operativo v2.2</span>
+                    <span class="text-[10px] font-bold uppercase">Sistema Operativo v2.3</span>
                 </div>
-                <p class="text-slate-500 text-xs font-medium italic">Ajuste técnico: Quesos granulados (1kg) y Bloques (2.5kg)</p>
+                <p class="text-slate-500 text-xs font-medium italic">Nomenclatura actualizada: Formatos de Bloque 2,5 kg aplicados.</p>
             </div>
         </div>
     </div>
@@ -98,11 +98,11 @@
             { id: "MPIN1205", nom: "QUESO CHEDDAR MAMA MOZA BLOQUE 2,5", div: 2.5 },
             { id: "PTIN1217", nom: "QUESO MAMA MOZA GRANULADO (1 KG)", div: 1 },
             { id: "PTKT1187", nom: "QUESO MOZZARELLA 200 GR VEGANO", div: 10 },
-            { id: "MPIN2189", nom: "QUESO MOZZARELA MAMA MOZA POR KILO", div: 2.5 },
-            { id: "MPEM3235", nom: "QUESO VEGAN CHEDDY VEGUSTA 1 KILO", div: 2.5 },
+            { id: "MPIN2189", nom: "QUESO MOZZARELA MAMA MOZA BLOQUE 2,5", div: 2.5 },
+            { id: "MPEM3235", nom: "QUESO VEGAN CHEDDY VEGUSTA BLOQUE 2,5", div: 2.5 },
             { id: "S/C", nom: "QUESO VEGAN CHEDDY VEGUSTA GRANULADO (1 KG)", div: 1 },
             { id: "PTEM1233", nom: "QUESO VEGAN CHEDDY VEGUSTA Pack 200g", div: 10 },
-            { id: "MPEM3234", nom: "QUESO MOZZARELA VEGAN MOZA POR KILO", div: 2.5 },
+            { id: "MPEM3234", nom: "QUESO MOZZARELA VEGAN MOZA BLOQUE 2,5", div: 2.5 },
             { id: "PTSA1237", nom: "QUESO VEGAN MOZZA VEGUSTA GRANULADO (1 KG)", div: 1 },
             { id: "PTEM1232", nom: "QUESO VEGAN MOZZA VEGUSTA PACK 200G", div: 10 },
             { id: "PTEM1199", nom: "SALCHICHA HAPPY DOGS GRANEL 17 CM", div: 1 },
@@ -123,7 +123,6 @@
             { id: "PTKT3148", nom: "VEGAN ROLL GRANEL CAJA 100 UNID", div: 1 }
         ];
 
-        // El resto de la lógica JS se mantiene igual para el cálculo automático...
         const tbody = document.getElementById('cuerpoTabla');
         let valores = data.map(() => ({ odoo: 0, real: 0 }));
 
