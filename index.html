@@ -1,233 +1,42 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soporte Técnico - Inventario Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Librería para exportar a Excel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.min.js"></script>
-    <style>
-        .row-active:focus-within { background-color: #f8fafc !important; }
-        .sticky-header { position: sticky; top: 0; z-index: 10; }
-        @media print { .no-print { display: none !important; } }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    </style>
-</head>
-<body class="bg-slate-50 p-2 md:p-6 font-sans text-slate-800">
+function exportarExcel() {
+    // 1. Preparamos los datos de las filas
+    const rows = data.map((p, i) => {
+        const boxOdoo = valores[i].odoo / p.div;
+        const dif = valores[i].real - boxOdoo;
+        let estado = "CONFORME";
+        if (dif < -0.01) estado = "FALTANTE";
+        if (dif > 0.01) estado = "SOBRANTE";
 
-    <div class="max-w-[1200px] mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-200">
-        
-        <!-- HEADER -->
-        <header class="bg-[#1e293b] p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b-4 border-indigo-500">
-            <div class="flex items-center gap-4">
-                <div class="bg-indigo-500 p-2 rounded-lg shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="text-white text-xl font-black uppercase tracking-tight">Auditoría de Stock</h1>
-                    <p class="text-indigo-300 text-[10px] font-mono tracking-widest uppercase">Mesa de Ayuda | Reporte Exportable</p>
-                </div>
-            </div>
-            <div class="flex gap-2 no-print">
-                <button onclick="exportarExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition shadow-lg flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    EXCEL
-                </button>
-                <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition shadow-lg flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    PDF
-                </button>
-            </div>
-        </header>
+        return {
+            "REFERENCIA": p.id,
+            "PRODUCTO": p.nom,
+            "FACTOR": p.div,
+            "STOCK ODOO (UNID)": valores[i].odoo,
+            "STOCK FÍSICO (CAJAS)": valores[i].real,
+            "DIFERENCIA (CAJAS)": parseFloat(dif.toFixed(2)),
+            "ESTADO": estado
+        };
+    });
 
-        <!-- DASHBOARD -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-0 border-b border-slate-100 bg-slate-50/30">
-            <div class="p-6 flex flex-col items-center justify-center border-r border-slate-100">
-                <canvas id="chartEstados" style="max-height: 120px;"></canvas>
-            </div>
-            <div class="p-6 flex flex-col items-center justify-center">
-                <span class="text-[10px] font-black text-slate-400 uppercase mb-1">Precisión de Inventario</span>
-                <span id="precisionKpi" class="text-6xl font-black text-slate-800 tracking-tighter">100%</span>
-                <p id="fechaActual" class="text-[10px] text-slate-400 mt-2 font-mono uppercase"></p>
-            </div>
-        </div>
+    // 2. Creamos la hoja de trabajo (Worksheet)
+    const ws = XLSX.utils.json_to_sheet(rows);
 
-        <!-- TABLA -->
-        <div class="overflow-x-auto">
-            <table id="tablaDatos" class="w-full border-collapse">
-                <thead class="sticky-header shadow-sm">
-                    <tr class="bg-slate-800 text-white text-[10px] uppercase">
-                        <th class="p-4 text-left">Ref.</th>
-                        <th class="p-4 text-left">Producto</th>
-                        <th class="p-4 text-center">Factor</th>
-                        <th class="p-4 w-24">Odoo</th>
-                        <th class="p-4 w-24">Físico</th>
-                        <th class="p-4 text-right">Dif. Cajas</th>
-                        <th class="p-4 text-center">Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="cuerpoTabla" class="divide-y divide-slate-100 text-[12px]"></tbody>
-            </table>
-        </div>
-    </div>
+    // 3. Añadimos estilo básico a las columnas (Ancho)
+    ws['!cols'] = [
+        { wch: 15 }, // Ref
+        { wch: 40 }, // Producto
+        { wch: 10 }, // Factor
+        { wch: 15 }, // Odoo
+        { wch: 15 }, // Físico
+        { wch: 15 }, // Diferencia
+        { wch: 15 }  // Estado
+    ];
 
-    <script>
-        const data = [
-            { id: "PTEM2039", nom: "BIFE VEG - Pack", div: 12 },
-            { id: "PTEM1179", nom: "CHAPARRITA SALCHI ROLL", div: 20 },
-            { id: "PTHA3105", nom: "CHORIZO VEGGIE - GRANEL", div: 1 },
-            { id: "PTEM2040", nom: "CHORIZO VEGGIE - PACK", div: 12 },
-            { id: "PTHA3123", nom: "HAMB POROTO NEGRO - GRANEL", div: 1 },
-            { id: "PTHA3160", nom: "HAMBURGUESA DARK SIDE HORECA (60 unid)", div: 1 },
-            { id: "PTHA1197", nom: "HAMBURGUESA DARK SIDE UNITARIA", div: 20 },
-            { id: "PTHA1198", nom: "HAMBURGUESA DE SEITAN UNITARIA", div: 20 },
-            { id: "PTHA2041", nom: "HAMBURGUESA GARBANZO - PACK", div: 1 },
-            { id: "PTHA3106", nom: "HAMBURGUESA GARBANZO - GRANEL", div: 1 },
-            { id: "PTHA3107", nom: "HAMBURGUESA LENTEJA - GRANEL", div: 1 },
-            { id: "PTHA3108", nom: "HAMBURGUESA SEITAN - GRANEL", div: 1 },
-            { id: "PTHA2043", nom: "HAMBURGUESA SEITAN - Pack", div: 8 },
-            { id: "PTMY3110", nom: "HORECA - MAYONESA GRANEL(caja 6 kg)", div: 1 },
-            { id: "PTMY3252", nom: "HORECA - SALSA CHEDDAR GRANEL(caja 6 kg)", div: 1 },
-            { id: "PTMY1269", nom: "SALSA CHEDDAR 350 GRS DOYPACK", div: 12 },
-            { id: "PTMY1270", nom: "MAYONESA V 350 GRS DOYPACK", div: 12 },
-            { id: "MPEM1175", nom: "JAMONADA VEG - PACK", div: 10 },
-            { id: "PTEM1166", nom: "JAMON AHUMADO HORECA(CAJA 4 KILOS)", div: 1 },
-            { id: "PTEM2044", nom: "JAMON AHUMADO VEG - PACK", div: 20 },
-            { id: "PTEM1147", nom: "JAMON AHUMADO DESPUNTE (6 kilos)", div: 1 },
-            { id: "PTEM2100", nom: "JAMON DORADO - PACK", div: 10 },
-            { id: "PTHA3262", nom: "MECHADA VEGGIE 500 GRS", div: 3 },
-            { id: "PTKT1185", nom: "QUESO CHEDDAR 200 GR VEGANO", div: 10 },
-            { id: "MPIN1205", nom: "QUESO CHEDDAR MAMA MOZA BLOQUE 2,5", div: 2.5 },
-            { id: "PTIN1217", nom: "QUESO MAMA MOZA GRANULADO (1 KG)", div: 1 },
-            { id: "PTKT1187", nom: "QUESO MOZZARELLA 200 GR VEGANO", div: 10 },
-            { id: "MPIN2189", nom: "QUESO MOZZARELA MAMA MOZA BLOQUE 2,5", div: 2.5 },
-            { id: "MPEM3235", nom: "QUESO VEGAN CHEDDY VEGUSTA BLOQUE 2,5", div: 2.5 },
-            { id: "S/C", nom: "QUESO VEGAN CHEDDY VEGUSTA GRANULADO (1 KG)", div: 1 },
-            { id: "PTEM1233", nom: "QUESO VEGAN CHEDDY VEGUSTA Pack 200g", div: 10 },
-            { id: "MPEM3234", nom: "QUESO MOZZARELA VEGAN MOZA BLOQUE 2,5", div: 2.5 },
-            { id: "PTSA1237", nom: "QUESO VEGAN MOZZA VEGUSTA GRANULADO (1 KG)", div: 1 },
-            { id: "PTEM1232", nom: "QUESO VEGAN MOZZA VEGUSTA PACK 200G", div: 10 },
-            { id: "PTEM1199", nom: "SALCHICHA HAPPY DOGS GRANEL 17 CM", div: 1 },
-            { id: "PTEM1215", nom: "SALCHICHA VEGUSTA HAPPY DOGS - PACK 14 CM", div: 20 },
-            { id: "PTEM3192", nom: "SALCHICHA VEGUSTA PLANT B GRANEL 20 CM", div: 1 },
-            { id: "PTEM1257", nom: "SEITAN CHURRASCO CARNE PACK 500GR", div: 10 },
-            { id: "PTEM1263", nom: "SEITAN CHURRASCO TRADICIONAL PACK 500GR", div: 10 },
-            { id: "MPEM1266", nom: "SEITAN CARNE (TROCITOS) PACK 500GR", div: 10 },
-            { id: "MPEV0268", nom: "SEITAN TRADICIONAL (TROCITOS) PACK 500GR", div: 10 },
-            { id: "PTEM1221", nom: "TOFU VEGUSTA 1 kg", div: 6 },
-            { id: "PTEM1220", nom: "TOFU VEGUSTA 500 GRS", div: 6 },
-            { id: "PTEM2147", nom: "VEGAN ROLL PACK 10 UNID", div: 12 },
-            { id: "PTEM1218", nom: "VEGGIEBALL DOYPACK 8 UNIDADES", div: 8 },
-            { id: "PTEM1181", nom: "VEGGIEBALL HORECA", div: 120 },
-            { id: "PTEM3115", nom: "VIENESA VEGGIE - GRANEL", div: 1 },
-            { id: "PTEM2047", nom: "VIENESA VEGGIE - PACK", div: 20 },
-            { id: "MPIN2016", nom: "Gluten vital de trigo", div: 25 },
-            { id: "PTKT3148", nom: "VEGAN ROLL GRANEL CAJA 100 UNID", div: 1 }
-        ];
-
-        let valores = data.map(() => ({ odoo: 0, real: 0 }));
-        let myChart;
-
-        function init() {
-            document.getElementById('fechaActual').innerText = new Date().toLocaleDateString();
-            const tbody = document.getElementById('cuerpoTabla');
-            data.forEach((p, i) => {
-                tbody.insertAdjacentHTML('beforeend', `
-                    <tr class="row-active transition-colors">
-                        <td class="p-4 font-mono font-bold text-indigo-500">${p.id}</td>
-                        <td class="p-4 font-semibold text-slate-600 uppercase">${p.nom}</td>
-                        <td class="p-4 text-center font-bold text-slate-400 border-x border-slate-50">${p.div}</td>
-                        <td class="p-2">
-                            <input type="number" oninput="calc(${i}, this.value, 'odoo')" class="no-print w-full bg-slate-50 border rounded p-2 text-right outline-none focus:border-indigo-500">
-                            <span class="hidden print:block text-right">${valores[i].odoo}</span>
-                        </td>
-                        <td class="p-2">
-                            <input type="number" oninput="calc(${i}, this.value, 'real')" class="no-print w-full bg-slate-50 border rounded p-2 text-right outline-none focus:border-indigo-500">
-                            <span class="hidden print:block text-right">${valores[i].real}</span>
-                        </td>
-                        <td class="p-4 text-right font-black" id="dif-${i}">0.00</td>
-                        <td class="p-4 text-center" id="stat-${i}"><span class="text-slate-300 italic">--</span></td>
-                    </tr>
-                `);
-            });
-            const ctx = document.getElementById('chartEstados').getContext('2d');
-            myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: { labels: ['OK', 'Faltante', 'Sobrante'], datasets: [{ data: [0, 0, 0], backgroundColor: ['#10b981', '#f43f5e', '#6366f1'], borderWidth: 0 }] },
-                options: { cutout: '75%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9, weight: 'bold' } } } } }
-            });
-        }
-
-        function calc(i, val, tipo) {
-            valores[i][tipo] = parseFloat(val) || 0;
-            const printSpans = document.querySelectorAll(`span.print\\:block`);
-            printSpans[i * 2 + (tipo === 'odoo' ? 0 : 1)].innerText = val || 0;
-
-            const boxOdoo = valores[i].odoo / data[i].div;
-            const dif = valores[i].real - boxOdoo;
-            
-            document.getElementById(`dif-${i}`).innerText = dif.toFixed(2);
-            const elStat = document.getElementById(`stat-${i}`);
-            if (Math.abs(dif) < 0.01) {
-                elStat.innerHTML = '<span class="text-emerald-500 font-bold uppercase text-[10px]">Ok</span>';
-            } else {
-                elStat.innerHTML = `<span class="text-${dif < 0 ? 'rose' : 'indigo'}-500 font-bold uppercase text-[10px]">${dif < 0 ? 'Faltante' : 'Sobrante'}</span>`;
-            }
-            updateUI();
-        }
-
-        function updateUI() {
-            let ok = 0, faltan = 0, sobra = 0, sumAbsDif = 0, sumCajas = 0;
-            valores.forEach((v, i) => {
-                const boxOdoo = v.odoo / data[i].div;
-                const dif = v.real - boxOdoo;
-                if (v.odoo > 0 || v.real > 0) {
-                    if (Math.abs(dif) < 0.01) ok++;
-                    else if (dif < 0) faltan++;
-                    else sobra++;
-                }
-                sumAbsDif += Math.abs(dif);
-                sumCajas += boxOdoo;
-            });
-            myChart.data.datasets[0].data = [ok, faltan, sobra];
-            myChart.update();
-            const precision = sumCajas === 0 ? 100 : Math.max(0, 100 - (sumAbsDif / sumCajas * 100));
-            document.getElementById('precisionKpi').innerText = precision.toFixed(1) + "%";
-        }
-
-        function exportarExcel() {
-            const rows = data.map((p, i) => {
-                const boxOdoo = valores[i].odoo / p.div;
-                const dif = valores[i].real - boxOdoo;
-                let estado = "--";
-                if(valores[i].odoo > 0 || valores[i].real > 0) {
-                    estado = Math.abs(dif) < 0.01 ? "CONFORME" : (dif < 0 ? "FALTANTE" : "SOBRANTE");
-                }
-                return {
-                    "Referencia": p.id,
-                    "Descripción": p.nom,
-                    "Factor": p.div,
-                    "Stock Odoo": valores[i].odoo,
-                    "Stock Físico": valores[i].real,
-                    "Diferencia Cajas": dif.toFixed(2),
-                    "Estado": estado
-                };
-            });
-            const ws = XLSX.utils.json_to_sheet(rows);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Auditoría Inventario");
-            XLSX.writeFile(wb, `Reporte_Inventario_${new Date().toISOString().split('T')[0]}.xlsx`);
-        }
-
-        init();
-    </script>
-</body>
-</html>
+    // 4. Generamos el libro (Workbook) y descargamos
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Auditoría " + new Date().toLocaleDateString());
+    
+    // Nombre del archivo con fecha actual
+    const nombreArchivo = `Informe_Inventario_${new Date().toISOString().slice(0,10)}.xlsx`;
+    XLSX.writeFile(wb, nombreArchivo);
+}
