@@ -3,133 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desvío de Inventario - Ajuste Gluten</title>
+    <title>Sistema de Control de Inventario - Reporte en Línea</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .input-table:focus { background-color: #f0f9ff; border-color: #0ea5e9; }
+        @media print { .no-print { display: none; } }
+    </style>
 </head>
-<body class="bg-gray-100 p-4">
-    <div class="max-w-6xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden">
-        <div class="bg-slate-900 p-6">
-            <h1 class="text-white text-3xl font-bold text-center tracking-tight">CONTROL DE DESVÍO DE INVENTARIO</h1>
-            <p class="text-slate-400 text-center mt-2 font-mono uppercase text-xs">Ajuste técnico: Gluten Vital 25kg</p>
+<body class="bg-slate-100 p-4 font-sans">
+    <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden border border-slate-200">
+        <!-- Encabezado Profesional -->
+        <div class="bg-slate-800 p-6 flex justify-between items-center border-b-4 border-blue-600">
+            <div>
+                <h1 class="text-white text-2xl font-black tracking-widest uppercase">Hoja de Trabajo: Desvío de Inventario</h1>
+                <p class="text-blue-400 text-sm font-bold">Logística & Mesa de Ayuda Soporte Técnico</p>
+            </div>
+            <div class="text-right no-print">
+                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-bold transition shadow-lg">
+                    Generar Reporte (PDF/Imprimir)
+                </button>
+            </div>
         </div>
 
-        <!-- Panel de Registro -->
-        <div class="p-6 bg-slate-50 border-b grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div class="lg:col-span-2">
-                <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Producto Seleccionado</label>
-                <select id="producto" class="w-full p-3 border-2 border-slate-200 rounded-lg focus:border-indigo-500 outline-none transition-all font-medium">
-                    <optgroup label="Materias Primas / Gran Formato">
-                        <option value="25">GLUTEN VITAL DE TRIGO (Saco 25kg)</option>
-                        <option value="3">MECHADA VEGGIE 500 GRS (Caja 3kg)</option>
-                    </optgroup>
-                    <optgroup label="Quesos (Bloques y Granulados)">
-                        <option value="2.5">QUESOS BLOQUE / GRANULADO (Conv. 2.5kg)</option>
-                        <option value="10">QUESO VEGANO 200 GR (Pack x10)</option>
-                    </optgroup>
-                    <optgroup label="Embutidos y Hamburguesas">
-                        <option value="20">SALCHICHA / CHAPARRITA / VIENESA (Pack x20)</option>
-                        <option value="12">BIFE / CHORIZO / VEGAN ROLL (Pack x12)</option>
-                        <option value="8">HAMBURGUESA SEITAN / VEGGIEBALL (Pack x8)</option>
-                        <option value="120">VEGGIEBALL HORECA (Caja x120)</option>
-                        <option value="10">SEITAN DEL BUENO 500GR (Pack x10)</option>
-                    </optgroup>
-                    <optgroup label="Otros">
-                        <option value="6">TOFU 1kg / 500g (Pack x6)</option>
-                        <option value="1">PRODUCTOS A GRANEL (Caja x1)</option>
-                    </optgroup>
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Stock Sistema (Odoo)</label>
-                <input type="number" id="odoo" class="w-full p-3 border-2 border-slate-200 rounded-lg outline-none focus:border-indigo-500" placeholder="0.00">
-            </div>
-            <div>
-                <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Stock Real (Físico)</label>
-                <input type="number" id="real" class="w-full p-3 border-2 border-slate-200 rounded-lg outline-none focus:border-indigo-500" placeholder="0">
-            </div>
-            <button onclick="registrar()" class="lg:col-span-4 bg-indigo-600 hover:bg-indigo-800 text-white font-black py-4 rounded-lg shadow-lg transition active:scale-95 uppercase">
-                Calcular y Agregar a la Lista
-            </button>
-        </div>
-
-        <!-- Tabla -->
-        <div class="p-6 overflow-x-auto">
-            <table class="w-full border-collapse">
+        <!-- Tabla de Datos Principal -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="tablaInventario">
                 <thead>
-                    <tr class="bg-slate-100 text-slate-600 text-[10px] uppercase text-left tracking-widest">
-                        <th class="p-4 border-b">Producto</th>
-                        <th class="p-4 border-b">Cajas Odoo</th>
-                        <th class="p-4 border-b">Físico</th>
-                        <th class="p-4 border-b">Diferencia</th>
-                        <th class="p-4 border-b">% Desvío</th>
-                        <th class="p-4 border-b text-center">Estado</th>
+                    <tr class="bg-slate-200 text-slate-700 text-[11px] uppercase font-black border-b border-slate-300">
+                        <th class="p-4 w-24">Cód. Interno</th>
+                        <th class="p-4">Descripción del Producto</th>
+                        <th class="p-4 w-28">Stock Odoo</th>
+                        <th class="p-4 w-28">Stock Real</th>
+                        <th class="p-4 w-24">Eq. Cajas</th>
+                        <th class="p-4 w-24">Diferencia</th>
+                        <th class="p-4 w-24 text-center">Estado</th>
                     </tr>
                 </thead>
-                <tbody id="filas" class="divide-y divide-slate-100"></tbody>
+                <tbody class="divide-y divide-slate-100 text-sm" id="cuerpoTabla">
+                    <!-- Los productos se cargan dinámicamente aquí -->
+                </tbody>
             </table>
         </div>
 
-        <!-- Footer KPI -->
-        <div class="bg-slate-900 p-8 border-t flex flex-col md:flex-row justify-between items-center text-white">
-            <span class="font-bold text-slate-500 uppercase tracking-widest text-xs">Mesa de Ayuda - Control de Inventario</span>
-            <div class="text-center md:text-right">
-                <p class="text-[10px] font-bold text-indigo-400 uppercase">Margen de Error Promedio</p>
-                <p id="kpi" class="text-4xl font-black">0.00%</p>
+        <!-- Resumen de Totales -->
+        <div class="bg-slate-50 p-6 border-t flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-slate-500 text-xs italic max-w-md">
+                * El cálculo de cajas se basa en el divisor técnico de cada producto (25kg para Gluten, 120 para Veggieball Horeca, etc.).
+            </div>
+            <div class="flex gap-8">
+                <div class="text-right">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase">Productos con Faltante</p>
+                    <p id="totalFaltantes" class="text-2xl font-black text-rose-600">0</p>
+                </div>
+                <div class="text-right border-l pl-8">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase">Precisión Global</p>
+                    <p id="precisionKpi" class="text-4xl font-black text-slate-800">100%</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let historialDesvios = [];
+        // Lista consolidada de productos basada en tu tabla de contenido real
+        const productos = [
+            { cod: '001', nom: 'BIFE VEG - Pack (x12)', div: 12 },
+            { cod: '002', nom: 'CHAPARRITA SALCHI ROLL (x20)', div: 20 },
+            { cod: '003', nom: 'CHORIZO VEGGIE - PACK (x12)', div: 12 },
+            { cod: '004', nom: 'HAMBURGUESA SEITAN - Pack (x8)', div: 8 },
+            { cod: '005', nom: 'SALSA CHEDDAR 350 GRS DOYPACK (x12)', div: 12 },
+            { cod: '006', nom: 'JAMONADA VEG - PACK (x10)', div: 10 },
+            { cod: '007', nom: 'JAMON AHUMADO VEG - PACK (x20)', div: 20 },
+            { cod: '008', nom: 'JAMON DORADO - PACK (x10)', div: 10 },
+            { cod: '009', nom: 'MECHADA VEGGIE 500 GRS (Caja 3kg)', div: 3 },
+            { cod: '010', nom: 'QUESO CHEDDAR 200 GR VEGANO (x10)', div: 10 },
+            { cod: '011', nom: 'QUESO MOZZARELLA 200 GR VEGANO (x10)', div: 10 },
+            { cod: '012', nom: 'QUESO VEGAN CHEDDY VEGUSTA PACK 200G (x10)', div: 10 },
+            { cod: '013', nom: 'SALCHICHA HAPPY DOGS - PACK (x20)', div: 20 },
+            { cod: '014', nom: 'SEITAN CHURRASCO CARNE/TRADICIONAL (x10)', div: 10 },
+            { cod: '015', nom: 'SEITAN TROCITOS CARNE/TRADICIONAL (x10)', div: 10 },
+            { cod: '016', nom: 'TOFU VEGUSTA 1kg / 500g (x6)', div: 6 },
+            { cod: '017', nom: 'VEGAN ROLL PACK 10 UNID (x12)', div: 12 },
+            { cod: '018', nom: 'VEGGIEBALL DOYPACK 8 UNID (x8)', div: 8 },
+            { cod: '019', nom: 'VEGGIEBALL HORECA (x120)', div: 120 },
+            { cod: '020', nom: 'VIENESA VEGGIE - PACK (x20)', div: 20 },
+            { cod: '021', nom: 'GLUTEN VITAL DE TRIGO (Saco 25kg)', div: 25 },
+            { cod: '022', nom: 'QUESOS BLOQUE/GRANULADO (Conv. 2.5kg)', div: 2.5 }
+        ];
 
-        function registrar() {
-            const prod = document.getElementById('producto');
-            const nombre = prod.options[prod.selectedIndex].text;
-            const divisor = parseFloat(prod.value);
-            const odoo = parseFloat(document.getElementById('odoo').value);
-            const real = parseFloat(document.getElementById('real').value);
+        function cargarTabla() {
+            const tbody = document.getElementById('cuerpoTabla');
+            productos.forEach((p, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors group";
+                tr.innerHTML = `
+                    <td class="p-4 font-mono text-slate-400 text-xs">${p.cod}</td>
+                    <td class="p-4 font-bold text-slate-700">${p.nom}</td>
+                    <td class="p-4">
+                        <input type="number" oninput="actualizarFila(${index}, this.value, 'odoo')" 
+                        class="w-full p-1 border-b border-slate-200 outline-none focus:border-blue-500 bg-transparent text-right font-medium" placeholder="0">
+                    </td>
+                    <td class="p-4">
+                        <input type="number" oninput="actualizarFila(${index}, this.value, 'real')" 
+                        class="w-full p-1 border-b border-slate-200 outline-none focus:border-blue-500 bg-transparent text-right font-medium" placeholder="0">
+                    </td>
+                    <td class="p-4 text-right text-slate-500 font-medium" id="cajas-${index}">0.00</td>
+                    <td class="p-4 text-right font-bold" id="dif-${index}">0.00</td>
+                    <td class="p-4 text-center" id="status-${index}">
+                        <span class="text-[9px] font-black text-slate-300 uppercase">Sin Datos</span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-            if (isNaN(odoo) || isNaN(real)) return alert("Por favor, ingresa valores válidos.");
+        let datosTemp = productos.map(() => ({ odoo: 0, real: 0 }));
 
-            const cajasTeoricas = odoo / divisor;
-            const diferencia = real - cajasTeoricas;
-            const porcentaje = cajasTeoricas === 0 ? 0 : (diferencia / cajasTeoricas);
+        function actualizarFila(idx, valor, campo) {
+            datosTemp[idx][campo] = parseFloat(valor) || 0;
+            const p = productos[idx];
+            const d = datosTemp[idx];
 
-            let estilo = "bg-emerald-100 text-emerald-800";
-            let etiqueta = "OK";
+            const cajasOdoo = d.odoo / p.div;
+            const diferencia = d.real - cajasOdoo;
+            
+            // Actualizar visual
+            document.getElementById(`cajas-${idx}`).innerText = cajasOdoo.toFixed(2);
+            const elDif = document.getElementById(`dif-${idx}`);
+            elDif.innerText = diferencia.toFixed(2);
+            elDif.className = `p-4 text-right font-bold ${diferencia < 0 ? 'text-rose-600' : 'text-blue-600'}`;
 
-            if (Math.abs(porcentaje) > 0.001) { // Tolerancia mínima
-                if (porcentaje > 0) {
-                    estilo = "bg-amber-100 text-amber-800";
-                    etiqueta = "SOBRANTE";
+            const elStatus = document.getElementById(`status-${idx}`);
+            if (d.odoo > 0 || d.real > 0) {
+                if (Math.abs(diferencia) < 0.01) {
+                    elStatus.innerHTML = '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[9px] font-black uppercase">OK</span>';
+                } else if (diferencia < 0) {
+                    elStatus.innerHTML = '<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[9px] font-black uppercase">FALTANTE</span>';
                 } else {
-                    estilo = "bg-rose-100 text-rose-800";
-                    etiqueta = "FALTANTE";
+                    elStatus.innerHTML = '<span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded text-[9px] font-black uppercase">SOBRANTE</span>';
                 }
             }
-
-            const tr = `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-4 font-bold text-slate-800">${nombre}</td>
-                    <td class="p-4 text-slate-500">${cajasTeoricas.toFixed(2)}</td>
-                    <td class="p-4 font-black text-slate-900">${real}</td>
-                    <td class="p-4 font-bold ${diferencia < 0 ? 'text-rose-600' : 'text-emerald-600'}">${diferencia.toFixed(2)}</td>
-                    <td class="p-4 font-mono font-bold">${(porcentaje * 100).toFixed(2)}%</td>
-                    <td class="p-4 text-center">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${estilo}">${etiqueta}</span>
-                    </td>
-                </tr>
-            `;
-
-            document.getElementById('filas').insertAdjacentHTML('afterbegin', tr);
-            historialDesvios.push(Math.abs(porcentaje));
-            
-            const promedio = (historialDesvios.reduce((a, b) => a + b, 0) / historialDesvios.length) * 100;
-            document.getElementById('kpi').innerText = promedio.toFixed(2) + "%";
-
-            document.getElementById('odoo').value = "";
-            document.getElementById('real').value = "";
+            calcularGlobales();
         }
+
+        function calcularGlobales() {
+            let faltantes = 0;
+            let sumDifAbs = 0;
+            let sumCajas = 0;
+
+            datosTemp.forEach((d, idx) => {
+                const cajas = d.odoo / productos[idx].div;
+                const dif = d.real - cajas;
+                if (dif < -0.01) faltantes++;
+                sumDifAbs += Math.abs(dif);
+                sumCajas += cajas;
+            });
+
+            document.getElementById('totalFaltantes').innerText = faltantes;
+            const precision = sumCajas === 0 ? 100 : Math.max(0, 100 - (sumDifAbs / sumCajas * 100));
+            document.getElementById('precisionKpi').innerText = precision.toFixed(1) + "%";
+            document.getElementById('precisionKpi').className = `text-4xl font-black ${precision < 95 ? 'text-rose-600' : 'text-slate-800'}`;
+        }
+
+        window.onload = cargarTabla;
     </script>
 </body>
 </html>
