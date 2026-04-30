@@ -3,89 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Desvío - Productos Terminados</title>
+    <title>Control de Inventario - Sistema vs Real</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-5">
-    <div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-lg">
-        <h1 class="text-2xl font-bold mb-6 text-center text-blue-800">CÁLCULO DE DESVÍO DE INVENTARIO</h1>
-        
+<body class="bg-gray-100 p-4">
+    <div class="max-w-5xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden">
+        <div class="bg-blue-700 p-6">
+            <h1 class="text-white text-2xl font-bold text-center">DESVÍO PRODUCTOS TERMINADOS</h1>
+            <p class="text-blue-100 text-center text-sm">Calculadora Web de Inventario</p>
+        </div>
+
         <!-- Formulario de Entrada -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 border rounded bg-gray-50">
-            <div>
-                <label class="block font-bold">Producto</label>
-                <select id="producto" class="w-full p-2 border rounded">
-                    <option value="BIFE" data-conv="12" data-unit="PACK">BIFE VEG - Pack (Caja x12)</option>
-                    <option value="QUESO_CHEDDY" data-conv="2.5" data-unit="KG">QUESO VEGAN CHEDDY 1KG (Bloque 2.5kg)</option>
-                    <option value="JAMON_AHUMADO" data-conv="20" data-unit="PACK">JAMON AHUMADO VEG - Pack (Caja x20)</option>
-                    <option value="SALCHICHA_HAPPY" data-conv="1" data-unit="CAJA">SALCHICHA HAPPY DOGS (Caja)</option>
-                    <!-- Puedes agregar más opciones siguiendo el patrón -->
+        <div class="p-6 grid grid-cols-1 md:grid-cols-4 gap-4 bg-gray-50 border-b">
+            <div class="md:col-span-2">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Seleccionar Producto</label>
+                <select id="producto" class="w-full p-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <!-- Divisores basados en el archivo Excel -->
+                    <optgroup label="Packs / Unidades">
+                        <option value="12">BIFE VEG - Pack (x12)</option>
+                        <option value="20">CHAPARRITA SALCHI ROLL (x20)</option>
+                        <option value="12">CHORIZO VEGGIE - PACK (x12)</option>
+                        <option value="20">HAMBURGUESA DARK SIDE UNITARIA (x20)</option>
+                        <option value="20">HAMBURGUESA DE SEITAN UNITARIA (x20)</option>
+                        <option value="8">HAMBURGUESA SEITAN - Pack (x8)</option>
+                        <option value="10">JAMONADA VEG - PACK (x10)</option>
+                        <option value="20">SALCHICHA VEGUSTA HAPPY DOGS - PACK (x20)</option>
+                    </optgroup>
+                    <optgroup label="Quesos (Conversión 2.5 KG)">
+                        <option value="2.5">QUESO VEGAN CHEDDY 1 KILO (Bloque 2.5)</option>
+                        <option value="2.5">QUESO MOZZARELA MAMA MOZA (Bloque 2.5)</option>
+                        <option value="2.5">QUESO MOZZARELA VEGAN MOZA (Bloque 2.5)</option>
+                    </optgroup>
+                    <optgroup label="Granel / Cajas Directas">
+                        <option value="1">CHORIZO VEGGIE - GRANEL</option>
+                        <option value="1">HAMB POROTO NEGRO - GRANEL</option>
+                        <option value="1">VIENESA VEGGIE - GRANEL</option>
+                    </optgroup>
                 </select>
             </div>
             <div>
-                <label class="block font-bold">Stock Sistema (Odoo)</label>
-                <input type="number" id="stockOdoo" class="w-full p-2 border rounded" placeholder="Ej: 120">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Cant. Odoo (D)</label>
+                <input type="number" id="cantOdoo" class="w-full p-2 border rounded-md focus:ring-blue-500" placeholder="0">
             </div>
             <div>
-                <label class="block font-bold">Stock Real (Físico)</label>
-                <input type="number" id="stockReal" class="w-full p-2 border rounded" placeholder="Ej: 10">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Stock Real (G)</label>
+                <input type="number" id="stockReal" class="w-full p-2 border rounded-md focus:ring-blue-500" placeholder="0">
             </div>
-            <button onclick="agregarFila()" class="md:col-span-3 bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700">Calcular y Agregar</button>
+            <button onclick="procesarDato()" class="md:col-span-4 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-md transition duration-200 shadow-md">
+                CALCULAR DESVÍO
+            </button>
         </div>
 
         <!-- Tabla de Resultados -->
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse border border-gray-300">
-                <thead>
-                    <tr class="bg-gray-200">
-                        <th class="border p-2">Producto</th>
-                        <th class="border p-2">Cant. Odoo</th>
-                        <th class="border p-2">Cajas/Bloques Odoo</th>
-                        <th class="border p-2">Stock Real</th>
-                        <th class="border p-2">Desvío</th>
-                        <th class="border p-2">% Desvío</th>
-                        <th class="border p-2">Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaBody"></tbody>
-            </table>
+        <div class="p-6">
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="text-left text-xs font-bold text-gray-500 uppercase tracking-wider border-b">
+                            <th class="pb-3 px-2">Producto</th>
+                            <th class="pb-3 px-2">Cajas Odoo (F)</th>
+                            <th class="pb-3 px-2">Real (G)</th>
+                            <th class="pb-3 px-2">Desvío (H)</th>
+                            <th class="pb-3 px-2">% Desvío (I)</th>
+                            <th class="pb-3 px-2 text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultadoBody" class="text-sm">
+                        <!-- Las filas se insertan aquí -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Resumen KPI -->
-        <div class="mt-6 p-4 bg-blue-100 rounded text-right">
-            <span class="text-xl font-bold">KPI Desvío Promedio: </span>
-            <span id="kpiTotal" class="text-xl font-bold text-blue-900">0%</span>
+        <div class="bg-gray-50 p-6 border-t flex justify-between items-center">
+            <span class="text-gray-600 font-medium">KPI Promedio de Desvío:</span>
+            <span id="kpiValue" class="text-2xl font-black text-blue-800">0.00%</span>
         </div>
     </div>
 
     <script>
-        let desviaciones = [];
+        let listaDesvios = [];
 
-        function agregarFila() {
+        function procesarDato() {
             const select = document.getElementById('producto');
             const nombre = select.options[select.selectedIndex].text;
-            const factor = parseFloat(select.options[select.selectedIndex].getAttribute('data-conv'));
-            const stockOdoo = parseFloat(document.getElementById('stockOdoo').value);
+            const divisor = parseFloat(select.value);
+            const cantOdoo = parseFloat(document.getElementById('cantOdoo').value);
             const stockReal = parseFloat(document.getElementById('stockReal').value);
 
-            if (isNaN(stockOdoo) || isNaN(stockReal)) return alert("Ingresa valores válidos");
-
-            // Lógica de conversión (Columna F del Excel)
-            const cajasOdoo = (stockOdoo / factor).toFixed(2);
-            
-            // Desvío (Columna H: G - F)
-            const desvio = (stockReal - cajasOdoo).toFixed(2);
-            
-            // % Desvío (Columna I)
-            let porcDesvio = 0;
-            if (parseFloat(cajasOdoo) !== 0) {
-                porcDesvio = (desvio / cajasOdoo);
+            if (isNaN(cantOdoo) || isNaN(stockReal)) {
+                alert("Por favor, ingresa los valores de Odoo y Stock Real.");
+                return;
             }
 
-            // Estado (Columna J)
+            // F: Cajas Odoo
+            const cajasOdoo = cantOdoo / divisor;
+            
+            // H: Desvío (Real - Odoo)
+            const desvio = stockReal - cajasOdoo;
+            
+            // I: % Desvío
+            const porcDesvio = cajasOdoo === 0 ? 0 : (desvio / cajasOdoo);
+            
+            // J: Estado Inventario
             let estado = "OK";
             let colorClase = "bg-green-100 text-green-800";
-            
+
             if (Math.abs(porcDesvio) > 0.005) {
                 if (porcDesvio > 0) {
                     estado = "SOBRANTE";
@@ -96,27 +120,30 @@
                 }
             }
 
-            // Renderizar fila
-            const row = `
-                <tr class="hover:bg-gray-50">
-                    <td class="border p-2">${nombre}</td>
-                    <td class="border p-2">${stockOdoo}</td>
-                    <td class="border p-2">${cajasOdoo}</td>
-                    <td class="border p-2">${stockReal}</td>
-                    <td class="border p-2 font-bold">${desvio}</td>
-                    <td class="border p-2">${(porcDesvio * 100).toFixed(2)}%</td>
-                    <td class="border p-2 font-bold ${colorClase}">${estado}</td>
+            // Agregar a la tabla
+            const fila = `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 px-2 font-medium text-gray-900">${nombre}</td>
+                    <td class="py-4 px-2 text-gray-600">${cajasOdoo.toFixed(2)}</td>
+                    <td class="py-4 px-2 font-bold">${stockReal}</td>
+                    <td class="py-4 px-2 font-bold ${desvio < 0 ? 'text-red-600' : 'text-blue-600'}">${desvio.toFixed(2)}</td>
+                    <td class="py-4 px-2">${(porcDesvio * 100).toFixed(2)}%</td>
+                    <td class="py-4 px-2 text-center">
+                        <span class="px-3 py-1 rounded-full font-bold text-xs ${colorClase}">${estado}</span>
+                    </td>
                 </tr>
             `;
-            document.getElementById('tablaBody').innerHTML += row;
-            
-            desviaciones.push(Math.abs(porcDesvio));
-            actualizarKPI();
-        }
 
-        function actualizarKPI() {
-            const promedio = desviaciones.reduce((a, b) => a + b, 0) / desviaciones.length;
-            document.getElementById('kpiTotal').innerText = (promedio * 100).toFixed(2) + "%";
+            document.getElementById('resultadoBody').innerHTML += fila;
+            listaDesvios.push(porcDesvio);
+            
+            // Actualizar KPI Promedio
+            const promedio = (listaDesvios.reduce((a, b) => a + b, 0) / listaDesvios.length) * 100;
+            document.getElementById('kpiValue').innerText = promedio.toFixed(2) + "%";
+
+            // Limpiar inputs
+            document.getElementById('cantOdoo').value = "";
+            document.getElementById('stockReal').value = "";
         }
     </script>
 </body>
