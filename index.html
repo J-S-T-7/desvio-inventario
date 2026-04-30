@@ -62,22 +62,21 @@
             <div class="text-right">
                 <div class="flex items-center justify-end gap-2 text-slate-400 mb-2">
                     <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                    <span class="text-[10px] font-bold uppercase">Sistema Operativo</span>
+                    <span class="text-[10px] font-bold uppercase">Sistema Operativo v2.1</span>
                 </div>
-                <p class="text-slate-500 text-xs font-medium italic">Referencia de Datos: Archivo Original DESVIO PRODUCTOS TERMINADOS.xlsx</p>
+                <p class="text-slate-500 text-xs font-medium italic">Actualización de maestros: Quesos por Kilo integrada.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Listado completo basado en tu archivo original
         const data = [
             { id: "PTEM2039", nom: "BIFE VEG - Pack", div: 12 },
             { id: "PTEM1179", nom: "CHAPARRITA SALCHI ROLL", div: 20 },
             { id: "PTHA3105", nom: "CHORIZO VEGGIE - GRANEL", div: 1 },
             { id: "PTEM2040", nom: "CHORIZO VEGGIE - PACK", div: 12 },
             { id: "PTHA3123", nom: "HAMB POROTO NEGRO - GRANEL", div: 1 },
-            { id: "PTHA3160", nom: "HAMBURGUESA DARK SIDE HORECA (60u)", div: 1 },
+            { id: "PTHA3160", nom: "HAMBURGUESA DARK SIDE HORECA (60 unid)", div: 1 },
             { id: "PTHA1197", nom: "HAMBURGUESA DARK SIDE UNITARIA", div: 20 },
             { id: "PTHA1198", nom: "HAMBURGUESA DE SEITAN UNITARIA", div: 20 },
             { id: "PTHA2041", nom: "HAMBURGUESA GARBANZO - PACK", div: 1 },
@@ -85,34 +84,34 @@
             { id: "PTHA3107", nom: "HAMBURGUESA LENTEJA - GRANEL", div: 1 },
             { id: "PTHA3108", nom: "HAMBURGUESA SEITAN - GRANEL", div: 1 },
             { id: "PTHA2043", nom: "HAMBURGUESA SEITAN - Pack", div: 8 },
-            { id: "PTMY3110", nom: "HORECA - MAYONESA GRANEL (6kg)", div: 1 },
-            { id: "PTMY3252", nom: "HORECA - SALSA CHEDDAR GRANEL (6kg)", div: 1 },
+            { id: "PTMY3110", nom: "HORECA - MAYONESA GRANEL(caja 6 kg)", div: 1 },
+            { id: "PTMY3252", nom: "HORECA - SALSA CHEDDAR GRANEL(caja 6 kg)", div: 1 },
             { id: "PTMY1269", nom: "SALSA CHEDDAR 350 GRS DOYPACK", div: 12 },
             { id: "PTMY1270", nom: "MAYONESA V 350 GRS DOYPACK", div: 12 },
             { id: "MPEM1175", nom: "JAMONADA VEG - PACK", div: 10 },
-            { id: "PTEM1166", nom: "JAMON AHUMADO HORECA (4kg)", div: 1 },
+            { id: "PTEM1166", nom: "JAMON AHUMADO HORECA(CAJA 4 KILOS)", div: 1 },
             { id: "PTEM2044", nom: "JAMON AHUMADO VEG - PACK", div: 20 },
-            { id: "PTEM1147", nom: "JAMON AHUMADO DESPUNTE (6kg)", div: 1 },
+            { id: "PTEM1147", nom: "JAMON AHUMADO DESPUNTE (6 kilos)", div: 1 },
             { id: "PTEM2100", nom: "JAMON DORADO - PACK", div: 10 },
             { id: "PTHA3262", nom: "MECHADA VEGGIE 500 GRS", div: 3 },
             { id: "PTKT1185", nom: "QUESO CHEDDAR 200 GR VEGANO", div: 10 },
             { id: "MPIN1205", nom: "QUESO CHEDDAR MAMA MOZA BLOQUE 2,5", div: 2.5 },
-            { id: "PTIN1217", nom: "QUESO MAMA MOZA GRANULADO", div: 2.5 },
+            { id: "PTIN1217", nom: "QUESO MAMA MOZA GRANULADO (1 KG)", div: 1 },
             { id: "PTKT1187", nom: "QUESO MOZZARELLA 200 GR VEGANO", div: 10 },
-            { id: "MPIN1206", nom: "QUESO MOZZARELLA MAMA MOZA BLOQUE 2,5", div: 2.5 },
-            { id: "PTEM1236", nom: "QUESO VEGAN CHEDDY VEGUSTA BLOQUE 2,5", div: 2.5 },
-            { id: "S/C", nom: "QUESO VEGAN CHEDDY VEGUSTA GRANULADO", div: 2.5 },
+            { id: "MPIN2189", nom: "QUESO MOZZARELA MAMA MOZA POR KILO", div: 1 },
+            { id: "MPEM3235", nom: "QUESO VEGAN CHEDDY VEGUSTA 1 KILO", div: 1 },
+            { id: "S/C", nom: "QUESO VEGAN CHEDDY VEGUSTA GRANULADO (1 KG)", div: 1 },
             { id: "PTEM1233", nom: "QUESO VEGAN CHEDDY VEGUSTA Pack 200g", div: 10 },
-            { id: "PTEM1235", nom: "QUESO VEGAN MOZZA VEGUSTA BLOQUE 2,5", div: 2.5 },
-            { id: "PTSA1237", nom: "QUESO VEGAN MOZZA VEGUSTA GRANULADO", div: 2.5 },
+            { id: "MPEM3234", nom: "QUESO MOZZARELA VEGAN MOZA POR KILO", div: 1 },
+            { id: "PTSA1237", nom: "QUESO VEGAN MOZZA VEGUSTA GRANULADO (1 KG)", div: 1 },
             { id: "PTEM1232", nom: "QUESO VEGAN MOZZA VEGUSTA PACK 200G", div: 10 },
             { id: "PTEM1199", nom: "SALCHICHA HAPPY DOGS GRANEL 17 CM", div: 1 },
             { id: "PTEM1215", nom: "SALCHICHA VEGUSTA HAPPY DOGS - PACK 14 CM", div: 20 },
             { id: "PTEM3192", nom: "SALCHICHA VEGUSTA PLANT B GRANEL 20 CM", div: 1 },
-            { id: "PTEM1257", nom: "SEITAN CHURRASCO CARNE 500GR", div: 10 },
-            { id: "PTEM1263", nom: "SEITAN CHURRASCO TRADICIONAL 500GR", div: 10 },
-            { id: "MPEM1266", nom: "SEITAN TROCITOS CARNE 500GR", div: 10 },
-            { id: "MPEV0268", nom: "SEITAN TROCITOS TRADICIONAL 500GR", div: 10 },
+            { id: "PTEM1257", nom: "SEITAN DEL BUENO CHURRASCO CARNE PACK 500GR", div: 10 },
+            { id: "PTEM1263", nom: "SEITAN DEL BUENO CHURRASCO TRADICIONAL PACK 500GR", div: 10 },
+            { id: "MPEM1266", nom: "SEITAN DEL BUENO CARNE (TROCITOS) PACK 500GR", div: 10 },
+            { id: "MPEV0268", nom: "SEITAN DEL BUENO (TROCITOS) TRADICIONAL PACK 500GR", div: 10 },
             { id: "PTEM1221", nom: "TOFU VEGUSTA 1 kg", div: 6 },
             { id: "PTEM1220", nom: "TOFU VEGUSTA 500 GRS", div: 6 },
             { id: "PTEM2147", nom: "VEGAN ROLL PACK 10 UNID", div: 12 },
@@ -121,10 +120,7 @@
             { id: "PTEM3115", nom: "VIENESA VEGGIE - GRANEL", div: 1 },
             { id: "PTEM2047", nom: "VIENESA VEGGIE - PACK", div: 20 },
             { id: "MPIN2016", nom: "Gluten vital de trigo", div: 25 },
-            { id: "PTKT3148", nom: "VEGAN ROLL GRANEL CAJA 100 UNID", div: 1 },
-            { id: "S/C", nom: "QUESO VEGAN CHEDDY VEGUSTA 1 KILO", div: 2.5 },
-            { id: "S/C", nom: "QUESO MOZZARELA MAMA MOZA POR KILO", div: 2.5 },
-            { id: "S/C", nom: "QUESO MOZZARELA VEGAN MOZA POR KILO", div: 2.5 }
+            { id: "PTKT3148", nom: "VEGAN ROLL GRANEL CAJA 100 UNID", div: 1 }
         ];
 
         const tbody = document.getElementById('cuerpoTabla');
