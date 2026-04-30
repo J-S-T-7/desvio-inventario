@@ -3,68 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soporte Técnico - Control de Inventario</title>
+    <title>Reporte Profesional de Inventario - Soporte Técnico</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @media print { .no-print { display: none; } }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .shadow-2xl { shadow: none; border: 1px solid #ddd; }
+            .page-break { page-break-before: always; }
+        }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="bg-gray-50 p-4 font-sans text-slate-900">
-    <div class="max-w-[1400px] mx-auto bg-white shadow-2xl rounded-lg overflow-hidden border border-slate-300">
+<body class="bg-slate-100 p-4 font-sans text-slate-900">
+    <div class="max-w-[1100px] mx-auto bg-white shadow-2xl rounded-xl overflow-hidden print:shadow-none">
         
-        <!-- Header Profesional -->
-        <div class="bg-slate-900 p-6 flex justify-between items-center border-b-4 border-indigo-600">
+        <!-- ENCABEZADO PROFESIONAL -->
+        <div class="bg-slate-900 p-8 flex justify-between items-center border-b-8 border-indigo-600">
             <div>
-                <h1 class="text-white text-2xl font-black tracking-tighter uppercase">Hoja de Control: Productos Terminados</h1>
-                <p class="text-indigo-400 text-xs font-mono">Generado por: Mesa de Ayuda Soporte Técnico</p>
+                <h1 class="text-white text-3xl font-black tracking-tighter uppercase">Informe de Auditoría de Inventario</h1>
+                <p class="text-indigo-400 font-mono text-sm uppercase tracking-widest">Departamento de Sistemas | Control de Activos</p>
             </div>
-            <div class="flex gap-4 no-print">
-                <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2 rounded font-black text-sm transition uppercase shadow-lg">
-                    Generar Reporte PDF
+            <div class="text-right text-slate-400 text-xs">
+                <p id="fechaActual"></p>
+                <button onclick="window.print()" class="no-print mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full font-bold transition shadow-lg">
+                    IMPRIMIR REPORTE PDF
                 </button>
             </div>
         </div>
 
-        <!-- Tabla Principal -->
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse" id="tablaMaestra">
+        <!-- DASHBOARD DE GRÁFICOS (Solo visibles si hay datos) -->
+        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50 border-b">
+            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase mb-4 text-center">Estado General de Productos</h3>
+                <canvas id="chartEstados" style="max-height: 200px;"></canvas>
+            </div>
+            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase mb-2 text-center">Precisión del Conteo</h3>
+                <p id="precisionKpi" class="text-6xl font-black text-slate-800">100%</p>
+                <p class="text-[10px] text-slate-500 font-bold uppercase mt-2">Nivel de Confianza</p>
+            </div>
+        </div>
+
+        <!-- TABLA DE DATOS -->
+        <div class="p-0">
+            <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-slate-100 text-slate-600 text-[10px] uppercase font-black border-b border-slate-300">
-                        <th class="p-3 w-32">Ref. Interna</th>
-                        <th class="p-3">Descripción del Producto</th>
-                        <th class="p-3 w-24 text-center">Unid/Caja</th>
-                        <th class="p-3 w-32">Stock Odoo</th>
-                        <th class="p-3 w-32">Stock Real</th>
-                        <th class="p-3 w-28 text-right">Eq. Cajas</th>
-                        <th class="p-3 w-28 text-right">Diferencia</th>
-                        <th class="p-3 w-32 text-center">Estado</th>
+                    <tr class="bg-slate-800 text-white text-[10px] uppercase font-bold">
+                        <th class="p-4">Ref. Interna</th>
+                        <th class="p-4">Descripción</th>
+                        <th class="p-4 text-center">Factor</th>
+                        <th class="p-4 w-24">Odoo</th>
+                        <th class="p-4 w-24">Físico</th>
+                        <th class="p-4 text-right">Dif. Cajas</th>
+                        <th class="p-4 text-center">Estado</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-200 text-[13px]" id="cuerpoTabla">
-                    <!-- Productos cargados vía JS -->
+                <tbody id="cuerpoTabla" class="text-[12px] divide-y divide-slate-100">
+                    <!-- Dinámico -->
                 </tbody>
             </table>
         </div>
 
-        <!-- Footer Resumen -->
-        <div class="bg-slate-50 p-8 border-t flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="flex gap-10">
-                <div class="border-l-4 border-indigo-500 pl-4">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Precisión de Inventario</p>
-                    <p id="precisionKpi" class="text-4xl font-black text-slate-800">100%</p>
-                </div>
-                <div class="border-l-4 border-rose-500 pl-4">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Ítems con Faltante</p>
-                    <p id="totalFaltantes" class="text-4xl font-black text-rose-600">0</p>
+        <!-- SECCIÓN DE FIRMAS (Para el PDF) -->
+        <div class="p-12 grid grid-cols-2 gap-20 mt-10 border-t bg-slate-50">
+            <div class="text-center">
+                <div class="border-t-2 border-slate-300 pt-2 text-slate-600 font-bold uppercase text-[10px]">
+                    Firma Responsable Bodega
                 </div>
             </div>
-            <div class="text-right">
-                <div class="flex items-center justify-end gap-2 text-slate-400 mb-2">
-                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                    <span class="text-[10px] font-bold uppercase">Sistema Operativo v2.3</span>
+            <div class="text-center">
+                <div class="border-t-2 border-slate-300 pt-2 text-slate-600 font-bold uppercase text-[10px]">
+                    Firma Soporte Técnico / Auditoría
                 </div>
-                <p class="text-slate-500 text-xs font-medium italic">Nomenclatura actualizada: Formatos de Bloque 2,5 kg aplicados.</p>
             </div>
         </div>
     </div>
@@ -108,10 +120,10 @@
             { id: "PTEM1199", nom: "SALCHICHA HAPPY DOGS GRANEL 17 CM", div: 1 },
             { id: "PTEM1215", nom: "SALCHICHA VEGUSTA HAPPY DOGS - PACK 14 CM", div: 20 },
             { id: "PTEM3192", nom: "SALCHICHA VEGUSTA PLANT B GRANEL 20 CM", div: 1 },
-            { id: "PTEM1257", nom: "SEITAN DEL BUENO CHURRASCO CARNE PACK 500GR", div: 10 },
-            { id: "PTEM1263", nom: "SEITAN DEL BUENO CHURRASCO TRADICIONAL PACK 500GR", div: 10 },
-            { id: "MPEM1266", nom: "SEITAN DEL BUENO CARNE (TROCITOS) PACK 500GR", div: 10 },
-            { id: "MPEV0268", nom: "SEITAN DEL BUENO (TROCITOS) TRADICIONAL PACK 500GR", div: 10 },
+            { id: "PTEM1257", nom: "SEITAN CHURRASCO CARNE PACK 500GR", div: 10 },
+            { id: "PTEM1263", nom: "SEITAN CHURRASCO TRADICIONAL PACK 500GR", div: 10 },
+            { id: "MPEM1266", nom: "SEITAN CARNE (TROCITOS) PACK 500GR", div: 10 },
+            { id: "MPEV0268", nom: "SEITAN TRADICIONAL (TROCITOS) PACK 500GR", div: 10 },
             { id: "PTEM1221", nom: "TOFU VEGUSTA 1 kg", div: 6 },
             { id: "PTEM1220", nom: "TOFU VEGUSTA 500 GRS", div: 6 },
             { id: "PTEM2147", nom: "VEGAN ROLL PACK 10 UNID", div: 12 },
@@ -123,75 +135,95 @@
             { id: "PTKT3148", nom: "VEGAN ROLL GRANEL CAJA 100 UNID", div: 1 }
         ];
 
+        document.getElementById('fechaActual').innerText = new Date().toLocaleString();
         const tbody = document.getElementById('cuerpoTabla');
         let valores = data.map(() => ({ odoo: 0, real: 0 }));
+        let myChart;
 
+        // Renderizado inicial
         data.forEach((p, i) => {
             const row = `
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-3 font-mono font-bold text-indigo-600">${p.id}</td>
-                    <td class="p-3 font-semibold text-slate-700">${p.nom}</td>
-                    <td class="p-3 text-center font-bold text-slate-400">${p.div}</td>
-                    <td class="p-3">
-                        <input type="number" oninput="calc(${i}, this.value, 'odoo')" 
-                        class="w-full bg-slate-100 border border-slate-200 rounded px-2 py-1 text-right focus:bg-white focus:border-indigo-500 outline-none">
+                    <td class="p-4 font-mono font-bold text-indigo-600">${p.id}</td>
+                    <td class="p-4 font-semibold text-slate-700 uppercase">${p.nom}</td>
+                    <td class="p-4 text-center font-bold text-slate-400">${p.div}</td>
+                    <td class="p-4">
+                        <input type="number" oninput="calc(${i}, this.value, 'odoo')" class="no-print w-full bg-slate-100 border border-slate-200 rounded px-2 py-1 text-right focus:bg-white focus:border-indigo-500 outline-none">
+                        <span class="hidden print:block text-right">${valores[i].odoo}</span>
                     </td>
-                    <td class="p-3">
-                        <input type="number" oninput="calc(${i}, this.value, 'real')" 
-                        class="w-full bg-slate-100 border border-slate-200 rounded px-2 py-1 text-right focus:bg-white focus:border-indigo-500 outline-none">
+                    <td class="p-4">
+                        <input type="number" oninput="calc(${i}, this.value, 'real')" class="no-print w-full bg-slate-100 border border-slate-200 rounded px-2 py-1 text-right focus:bg-white focus:border-indigo-500 outline-none">
+                        <span class="hidden print:block text-right">${valores[i].real}</span>
                     </td>
-                    <td class="p-3 text-right font-medium text-slate-500" id="cajas-${i}">0.00</td>
-                    <td class="p-3 text-right font-black" id="dif-${i}">0.00</td>
-                    <td class="p-3 text-center" id="stat-${i}">
-                        <span class="text-[9px] font-black text-slate-300">--</span>
-                    </td>
+                    <td class="p-4 text-right font-black" id="dif-${i}">0.00</td>
+                    <td class="p-4 text-center" id="stat-${i}">--</td>
                 </tr>
             `;
             tbody.insertAdjacentHTML('beforeend', row);
         });
 
+        function initChart() {
+            const ctx = document.getElementById('chartEstados').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['OK', 'Faltantes', 'Sobrantes'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#10b981', '#ef4444', '#6366f1'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '70%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, weight: 'bold' } } } } }
+            });
+        }
+
         function calc(i, val, tipo) {
             valores[i][tipo] = parseFloat(val) || 0;
-            const item = data[i];
-            const cajasOdoo = valores[i].odoo / item.div;
-            const diferencia = valores[i].real - cajasOdoo;
+            const inputElements = document.querySelectorAll(`span.print\\:block`);
+            inputElements[i * 2 + (tipo === 'odoo' ? 0 : 1)].innerText = val || 0;
 
-            document.getElementById(`cajas-${i}`).innerText = cajasOdoo.toFixed(2);
+            const boxesOdoo = valores[i].odoo / data[i].div;
+            const dif = valores[i].real - boxesOdoo;
+            
             const elDif = document.getElementById(`dif-${i}`);
-            elDif.innerText = diferencia.toFixed(2);
-            elDif.className = `p-3 text-right font-black ${diferencia < -0.01 ? 'text-rose-600' : (diferencia > 0.01 ? 'text-indigo-600' : 'text-slate-700')}`;
+            elDif.innerText = dif.toFixed(2);
+            elDif.className = `p-4 text-right font-black ${dif < -0.01 ? 'text-rose-600' : (dif > 0.01 ? 'text-indigo-600' : 'text-slate-700')}`;
 
             const elStat = document.getElementById(`stat-${i}`);
-            if (valores[i].odoo === 0 && valores[i].real === 0) {
-                elStat.innerHTML = '<span class="text-[9px] font-black text-slate-300">--</span>';
-            } else if (Math.abs(diferencia) < 0.01) {
-                elStat.innerHTML = '<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[9px] font-black uppercase">OK</span>';
+            if (Math.abs(dif) < 0.01) {
+                elStat.innerHTML = '<span class="text-emerald-600 font-black italic">CONFORME</span>';
             } else {
-                const color = diferencia < 0 ? 'bg-rose-100 text-rose-700' : 'bg-indigo-100 text-indigo-700';
-                const label = diferencia < 0 ? 'FALTANTE' : 'SOBRANTE';
-                elStat.innerHTML = `<span class="${color} px-3 py-1 rounded-full text-[9px] font-black uppercase">${label}</span>`;
+                elStat.innerHTML = `<span class="${dif < 0 ? 'text-rose-600' : 'text-indigo-600'} font-black italic">${dif < 0 ? 'DESVÍO (-)' : 'SOBRANTE (+)'}</span>`;
             }
-            resumen();
+            updateUI();
         }
 
-        function resumen() {
-            let totalFaltantes = 0;
-            let sumAbsDif = 0;
-            let sumCajas = 0;
+        function updateUI() {
+            let ok = 0, faltan = 0, sobra = 0, sumAbsDif = 0, sumCajas = 0;
 
             valores.forEach((v, i) => {
-                const cajas = v.odoo / data[i].div;
-                const dif = v.real - cajas;
-                if (dif < -0.01) totalFaltantes++;
+                const boxesOdoo = v.odoo / data[i].div;
+                const dif = v.real - boxesOdoo;
+                if (v.odoo > 0 || v.real > 0) {
+                    if (Math.abs(dif) < 0.01) ok++;
+                    else if (dif < 0) faltan++;
+                    else sobra++;
+                }
                 sumAbsDif += Math.abs(dif);
-                sumCajas += cajas;
+                sumCajas += boxesOdoo;
             });
 
-            document.getElementById('totalFaltantes').innerText = totalFaltantes;
+            myChart.data.datasets[0].data = [ok, faltan, sobra];
+            myChart.update();
+
             const precision = sumCajas === 0 ? 100 : Math.max(0, 100 - (sumAbsDif / sumCajas * 100));
-            document.getElementById('precisionKpi').innerText = precision.toFixed(1) + "%";
-            document.getElementById('precisionKpi').className = `text-4xl font-black ${precision < 98 ? 'text-rose-600' : 'text-slate-800'}`;
+            const elPrec = document.getElementById('precisionKpi');
+            elPrec.innerText = precision.toFixed(1) + "%";
+            elPrec.className = `text-6xl font-black ${precision < 95 ? 'text-rose-600' : 'text-slate-800'}`;
         }
+
+        initChart();
     </script>
 </body>
 </html>
