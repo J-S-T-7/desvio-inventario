@@ -3,168 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Control de Inventario - Reporte en Línea</title>
+    <title>Soporte Técnico - Control de Inventario</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .input-table:focus { background-color: #f0f9ff; border-color: #0ea5e9; }
         @media print { .no-print { display: none; } }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="bg-slate-100 p-4 font-sans">
-    <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden border border-slate-200">
-        <!-- Encabezado Profesional -->
-        <div class="bg-slate-800 p-6 flex justify-between items-center border-b-4 border-blue-600">
+<body class="bg-gray-50 p-4 font-sans text-slate-900">
+    <div class="max-w-[1400px] mx-auto bg-white shadow-2xl rounded-lg overflow-hidden border border-slate-300">
+        
+        <!-- Header Profesional -->
+        <div class="bg-slate-900 p-6 flex justify-between items-center border-b-4 border-indigo-600">
             <div>
-                <h1 class="text-white text-2xl font-black tracking-widest uppercase">Hoja de Trabajo: Desvío de Inventario</h1>
-                <p class="text-blue-400 text-sm font-bold">Logística & Mesa de Ayuda Soporte Técnico</p>
+                <h1 class="text-white text-2xl font-black tracking-tighter uppercase">Hoja de Control: Productos Terminados</h1>
+                <p class="text-indigo-400 text-xs font-mono">Generado por: Mesa de Ayuda Soporte Técnico</p>
             </div>
-            <div class="text-right no-print">
-                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-bold transition shadow-lg">
-                    Generar Reporte (PDF/Imprimir)
+            <div class="flex gap-4 no-print">
+                <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2 rounded font-black text-sm transition uppercase shadow-lg">
+                    Generar Reporte PDF
                 </button>
             </div>
         </div>
 
-        <!-- Tabla de Datos Principal -->
+        <!-- Tabla Principal -->
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse" id="tablaInventario">
+            <table class="w-full text-left border-collapse" id="tablaMaestra">
                 <thead>
-                    <tr class="bg-slate-200 text-slate-700 text-[11px] uppercase font-black border-b border-slate-300">
-                        <th class="p-4 w-24">Cód. Interno</th>
-                        <th class="p-4">Descripción del Producto</th>
-                        <th class="p-4 w-28">Stock Odoo</th>
-                        <th class="p-4 w-28">Stock Real</th>
-                        <th class="p-4 w-24">Eq. Cajas</th>
-                        <th class="p-4 w-24">Diferencia</th>
-                        <th class="p-4 w-24 text-center">Estado</th>
+                    <tr class="bg-slate-100 text-slate-600 text-[10px] uppercase font-black border-b border-slate-300">
+                        <th class="p-3 w-32">Ref. Interna</th>
+                        <th class="p-3">Descripción del Producto</th>
+                        <th class="p-3 w-24 text-center">Unid/Caja</th>
+                        <th class="p-3 w-32">Stock Odoo</th>
+                        <th class="p-3 w-32">Stock Real</th>
+                        <th class="p-3 w-28 text-right">Eq. Cajas</th>
+                        <th class="p-3 w-28 text-right">Diferencia</th>
+                        <th class="p-3 w-32 text-center">Estado</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 text-sm" id="cuerpoTabla">
-                    <!-- Los productos se cargan dinámicamente aquí -->
+                <tbody class="divide-y divide-slate-200 text-[13px]" id="cuerpoTabla">
+                    <!-- Productos cargados vía JS -->
                 </tbody>
             </table>
         </div>
 
-        <!-- Resumen de Totales -->
-        <div class="bg-slate-50 p-6 border-t flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="text-slate-500 text-xs italic max-w-md">
-                * El cálculo de cajas se basa en el divisor técnico de cada producto (25kg para Gluten, 120 para Veggieball Horeca, etc.).
-            </div>
-            <div class="flex gap-8">
-                <div class="text-right">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase">Productos con Faltante</p>
-                    <p id="totalFaltantes" class="text-2xl font-black text-rose-600">0</p>
-                </div>
-                <div class="text-right border-l pl-8">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase">Precisión Global</p>
+        <!-- Footer Resumen -->
+        <div class="bg-slate-50 p-8 border-t flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex gap-10">
+                <div class="border-l-4 border-indigo-500 pl-4">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Precisión de Inventario</p>
                     <p id="precisionKpi" class="text-4xl font-black text-slate-800">100%</p>
                 </div>
+                <div class="border-l-4 border-rose-500 pl-4">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Ítems con Faltante</p>
+                    <p id="totalFaltantes" class="text-4xl font-black text-rose-600">0</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="flex items-center justify-end gap-2 text-slate-400 mb-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                    <span class="text-[10px] font-bold uppercase">Sistema Operativo</span>
+                </div>
+                <p class="text-slate-500 text-xs font-medium italic">Referencia de Datos: Archivo Original DESVIO PRODUCTOS TERMINADOS.xlsx</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Lista consolidada de productos basada en tu tabla de contenido real
-        const productos = [
-            { cod: '001', nom: 'BIFE VEG - Pack (x12)', div: 12 },
-            { cod: '002', nom: 'CHAPARRITA SALCHI ROLL (x20)', div: 20 },
-            { cod: '003', nom: 'CHORIZO VEGGIE - PACK (x12)', div: 12 },
-            { cod: '004', nom: 'HAMBURGUESA SEITAN - Pack (x8)', div: 8 },
-            { cod: '005', nom: 'SALSA CHEDDAR 350 GRS DOYPACK (x12)', div: 12 },
-            { cod: '006', nom: 'JAMONADA VEG - PACK (x10)', div: 10 },
-            { cod: '007', nom: 'JAMON AHUMADO VEG - PACK (x20)', div: 20 },
-            { cod: '008', nom: 'JAMON DORADO - PACK (x10)', div: 10 },
-            { cod: '009', nom: 'MECHADA VEGGIE 500 GRS (Caja 3kg)', div: 3 },
-            { cod: '010', nom: 'QUESO CHEDDAR 200 GR VEGANO (x10)', div: 10 },
-            { cod: '011', nom: 'QUESO MOZZARELLA 200 GR VEGANO (x10)', div: 10 },
-            { cod: '012', nom: 'QUESO VEGAN CHEDDY VEGUSTA PACK 200G (x10)', div: 10 },
-            { cod: '013', nom: 'SALCHICHA HAPPY DOGS - PACK (x20)', div: 20 },
-            { cod: '014', nom: 'SEITAN CHURRASCO CARNE/TRADICIONAL (x10)', div: 10 },
-            { cod: '015', nom: 'SEITAN TROCITOS CARNE/TRADICIONAL (x10)', div: 10 },
-            { cod: '016', nom: 'TOFU VEGUSTA 1kg / 500g (x6)', div: 6 },
-            { cod: '017', nom: 'VEGAN ROLL PACK 10 UNID (x12)', div: 12 },
-            { cod: '018', nom: 'VEGGIEBALL DOYPACK 8 UNID (x8)', div: 8 },
-            { cod: '019', nom: 'VEGGIEBALL HORECA (x120)', div: 120 },
-            { cod: '020', nom: 'VIENESA VEGGIE - PACK (x20)', div: 20 },
-            { cod: '021', nom: 'GLUTEN VITAL DE TRIGO (Saco 25kg)', div: 25 },
-            { cod: '022', nom: 'QUESOS BLOQUE/GRANULADO (Conv. 2.5kg)', div: 2.5 }
+        // Listado completo basado en tu archivo original
+        const data = [
+            { id: "PTEM2039", nom: "BIFE VEG - Pack", div: 12 },
+            { id: "PTEM1179", nom: "CHAPARRITA SALCHI ROLL", div: 20 },
+            { id: "PTHA3105", nom: "CHORIZO VEGGIE - GRANEL", div: 1 },
+            { id: "PTEM2040", nom: "CHORIZO VEGGIE - PACK", div: 12 },
+            { id: "PTHA3123", nom: "HAMB POROTO NEGRO - GRANEL", div: 1 },
+            { id: "PTHA3160", nom: "HAMBURGUESA DARK SIDE HORECA (60u)", div: 1 },
+            { id: "PTHA1197", nom: "HAMBURGUESA DARK SIDE UNITARIA", div: 20 },
+            { id: "PTHA1198", nom: "HAMBURGUESA DE SEITAN UNITARIA", div: 20 },
+            { id: "PTHA2041", nom: "HAMBURGUESA GARBANZO - PACK", div: 1 },
+            { id: "PTHA3106", nom: "HAMBURGUESA GARBANZO - GRANEL", div: 1 },
+            { id: "PTHA3107", nom: "HAMBURGUESA LENTEJA - GRANEL", div: 1 },
+            { id: "PTHA3108", nom: "HAMBURGUESA SEITAN - GRANEL", div: 1 },
+            { id: "PTHA2043", nom: "HAMBURGUESA SEITAN - Pack", div: 8 },
+            { id: "PTMY3110", nom: "HORECA - MAYONESA GRANEL (6kg)", div: 1 },
+            { id: "PTMY3252", nom: "HORECA - SALSA CHEDDAR GRANEL (6kg)", div: 1 },
+            { id: "PTMY1269", nom: "SALSA CHEDDAR 350 GRS DOYPACK", div: 12 },
+            { id: "PTMY1270", nom: "MAYONESA V 350 GRS DOYPACK", div: 12 },
+            { id: "MPEM1175", nom: "JAMONADA VEG - PACK", div: 10 },
+            { id: "PTEM1166", nom: "JAMON AHUMADO HORECA (4kg)", div: 1 },
+            { id: "PTEM2044", nom: "JAMON AHUMADO VEG - PACK", div: 20 },
+            { id: "PTEM1147", nom: "JAMON AHUMADO DESPUNTE (6kg)", div: 1 },
+            { id: "PTEM2100", nom: "JAMON DORADO - PACK", div: 10 },
+            { id: "PTHA3262", nom: "MECHADA VEGGIE 500 GRS", div: 3 },
+            { id: "PTKT1185", nom: "QUESO CHEDDAR 200 GR VEGANO", div: 10 },
+            { id: "MPIN1205", nom: "QUESO CHEDDAR MAMA MOZA BLOQUE 2,5", div: 2.5 },
+            { id: "PTIN1217", nom: "QUESO MAMA MOZA GRANULADO", div: 2.5 },
+            { id: "PTKT1187", nom: "QUESO MOZZARELLA 200 GR VEGANO", div: 10 },
+            { id: "MPIN1206", nom: "QUESO MOZZARELLA MAMA MOZA BLOQUE 2,5", div: 2.5 },
+            { id: "PTEM1236", nom: "QUESO VEGAN CHEDDY VEGUSTA BLOQUE 2,5", div: 2.5 },
+            { id: "S/C", nom: "QUESO VEGAN CHEDDY VEGUSTA GRANULADO", div: 2.5 },
+            { id: "PTEM1233", nom: "QUESO VEGAN CHEDDY VEGUSTA Pack 200g", div: 10 },
+            { id: "PTEM1235", nom: "QUESO VEGAN MOZZA VEGUSTA BLOQUE 2,5", div: 2.5 },
+            { id: "PTSA1237", nom: "QUESO VEGAN MOZZA VEGUSTA GRANULADO", div: 2.5 },
+            { id: "PTEM1232", nom: "QUESO VEGAN MOZZA VEGUSTA PACK 200G", div: 10 },
+            { id: "PTEM1199", nom: "SALCHICHA HAPPY DOGS GRANEL 17 CM", div: 1 },
+            { id: "PTEM1215", nom: "SALCHICHA VEGUSTA HAPPY DOGS - PACK 14 CM", div: 20 },
+            { id: "PTEM3192", nom: "SALCHICHA VEGUSTA PLANT B GRANEL 20 CM", div: 1 },
+            { id: "PTEM1257", nom: "SEITAN CHURRASCO CARNE 500GR", div: 10 },
+            { id: "PTEM1263", nom: "SEITAN CHURRASCO TRADICIONAL 500GR", div: 10 },
+            { id: "MPEM1266", nom: "SEITAN TROCITOS CARNE 500GR", div: 10 },
+            { id: "MPEV0268", nom: "SEITAN TROCITOS TRADICIONAL 500GR", div: 10 },
+            { id: "PTEM1221", nom: "TOFU VEGUSTA 1 kg", div: 6 },
+            { id: "PTEM1220", nom: "TOFU VEGUSTA 500 GRS", div: 6 },
+            { id: "PTEM2147", nom: "VEGAN ROLL PACK 10 UNID", div: 12 },
+            { id: "PTEM1218", nom: "VEGGIEBALL DOYPACK 8 UNIDADES", div: 8 },
+            { id: "PTEM1181", nom: "VEGGIEBALL HORECA", div: 120 },
+            { id: "PTEM3115", nom: "VIENESA VEGGIE - GRANEL", div: 1 },
+            { id: "PTEM2047", nom: "VIENESA VEGGIE - PACK", div: 20 },
+            { id: "MPIN2016", nom: "Gluten vital de trigo", div: 25 },
+            { id: "PTKT3148", nom: "VEGAN ROLL GRANEL CAJA 100 UNID", div: 1 },
+            { id: "S/C", nom: "QUESO VEGAN CHEDDY VEGUSTA 1 KILO", div: 2.5 },
+            { id: "S/C", nom: "QUESO MOZZARELA MAMA MOZA POR KILO", div: 2.5 },
+            { id: "S/C", nom: "QUESO MOZZARELA VEGAN MOZA POR KILO", div: 2.5 }
         ];
 
-        function cargarTabla() {
-            const tbody = document.getElementById('cuerpoTabla');
-            productos.forEach((p, index) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition-colors group";
-                tr.innerHTML = `
-                    <td class="p-4 font-mono text-slate-400 text-xs">${p.cod}</td>
-                    <td class="p-4 font-bold text-slate-700">${p.nom}</td>
-                    <td class="p-4">
-                        <input type="number" oninput="actualizarFila(${index}, this.value, 'odoo')" 
-                        class="w-full p-1 border-b border-slate-200 outline-none focus:border-blue-500 bg-transparent text-right font-medium" placeholder="0">
-                    </td>
-                    <td class="p-4">
-                        <input type="number" oninput="actualizarFila(${index}, this.value, 'real')" 
-                        class="w-full p-1 border-b border-slate-200 outline-none focus:border-blue-500 bg-transparent text-right font-medium" placeholder="0">
-                    </td>
-                    <td class="p-4 text-right text-slate-500 font-medium" id="cajas-${index}">0.00</td>
-                    <td class="p-4 text-right font-bold" id="dif-${index}">0.00</td>
-                    <td class="p-4 text-center" id="status-${index}">
-                        <span class="text-[9px] font-black text-slate-300 uppercase">Sin Datos</span>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+        const tbody = document.getElementById('cuerpoTabla');
+        let valores = data.map(() => ({ odoo: 0, real: 0 }));
 
-        let datosTemp = productos.map(() => ({ odoo: 0, real: 0 }));
+        data.forEach((p, i) => {
+            const row = `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 font-mono font-bold text-indigo-600">${p.id}</td>
+                    <td class="p-3 font-semibold text-slate-700">${p.nom}</td>
+                    <td class="p-3 text-center font-bold text-slate-400">${p.div}</td>
+                    <td class="p-3">
+                        <input type="number" oninput="calc(${i}, this.value, 'odoo')" 
+                        class="w-full bg-slate-100 border border-slate-200 rounded px-2 py-1 text-right focus:bg-white focus:border-indigo-500 outline-none">
+                    </td>
+                    <td class="p-3">
+                        <input type="number" oninput="calc(${i}, this.value, 'real')" 
+                        class="w-full bg-slate-100 border border-slate-200 rounded px-2 py-1 text-right focus:bg-white focus:border-indigo-500 outline-none">
+                    </td>
+                    <td class="p-3 text-right font-medium text-slate-500" id="cajas-${i}">0.00</td>
+                    <td class="p-3 text-right font-black" id="dif-${i}">0.00</td>
+                    <td class="p-3 text-center" id="stat-${i}">
+                        <span class="text-[9px] font-black text-slate-300">--</span>
+                    </td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', row);
+        });
 
-        function actualizarFila(idx, valor, campo) {
-            datosTemp[idx][campo] = parseFloat(valor) || 0;
-            const p = productos[idx];
-            const d = datosTemp[idx];
+        function calc(i, val, tipo) {
+            valores[i][tipo] = parseFloat(val) || 0;
+            const item = data[i];
+            const cajasOdoo = valores[i].odoo / item.div;
+            const diferencia = valores[i].real - cajasOdoo;
 
-            const cajasOdoo = d.odoo / p.div;
-            const diferencia = d.real - cajasOdoo;
-            
-            // Actualizar visual
-            document.getElementById(`cajas-${idx}`).innerText = cajasOdoo.toFixed(2);
-            const elDif = document.getElementById(`dif-${idx}`);
+            document.getElementById(`cajas-${i}`).innerText = cajasOdoo.toFixed(2);
+            const elDif = document.getElementById(`dif-${i}`);
             elDif.innerText = diferencia.toFixed(2);
-            elDif.className = `p-4 text-right font-bold ${diferencia < 0 ? 'text-rose-600' : 'text-blue-600'}`;
+            elDif.className = `p-3 text-right font-black ${diferencia < -0.01 ? 'text-rose-600' : (diferencia > 0.01 ? 'text-indigo-600' : 'text-slate-700')}`;
 
-            const elStatus = document.getElementById(`status-${idx}`);
-            if (d.odoo > 0 || d.real > 0) {
-                if (Math.abs(diferencia) < 0.01) {
-                    elStatus.innerHTML = '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[9px] font-black uppercase">OK</span>';
-                } else if (diferencia < 0) {
-                    elStatus.innerHTML = '<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[9px] font-black uppercase">FALTANTE</span>';
-                } else {
-                    elStatus.innerHTML = '<span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded text-[9px] font-black uppercase">SOBRANTE</span>';
-                }
+            const elStat = document.getElementById(`stat-${i}`);
+            if (valores[i].odoo === 0 && valores[i].real === 0) {
+                elStat.innerHTML = '<span class="text-[9px] font-black text-slate-300">--</span>';
+            } else if (Math.abs(diferencia) < 0.01) {
+                elStat.innerHTML = '<span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[9px] font-black uppercase">OK</span>';
+            } else {
+                const color = diferencia < 0 ? 'bg-rose-100 text-rose-700' : 'bg-indigo-100 text-indigo-700';
+                const label = diferencia < 0 ? 'FALTANTE' : 'SOBRANTE';
+                elStat.innerHTML = `<span class="${color} px-3 py-1 rounded-full text-[9px] font-black uppercase">${label}</span>`;
             }
-            calcularGlobales();
+            resumen();
         }
 
-        function calcularGlobales() {
-            let faltantes = 0;
-            let sumDifAbs = 0;
+        function resumen() {
+            let totalFaltantes = 0;
+            let sumAbsDif = 0;
             let sumCajas = 0;
 
-            datosTemp.forEach((d, idx) => {
-                const cajas = d.odoo / productos[idx].div;
-                const dif = d.real - cajas;
-                if (dif < -0.01) faltantes++;
-                sumDifAbs += Math.abs(dif);
+            valores.forEach((v, i) => {
+                const cajas = v.odoo / data[i].div;
+                const dif = v.real - cajas;
+                if (dif < -0.01) totalFaltantes++;
+                sumAbsDif += Math.abs(dif);
                 sumCajas += cajas;
             });
 
-            document.getElementById('totalFaltantes').innerText = faltantes;
-            const precision = sumCajas === 0 ? 100 : Math.max(0, 100 - (sumDifAbs / sumCajas * 100));
+            document.getElementById('totalFaltantes').innerText = totalFaltantes;
+            const precision = sumCajas === 0 ? 100 : Math.max(0, 100 - (sumAbsDif / sumCajas * 100));
             document.getElementById('precisionKpi').innerText = precision.toFixed(1) + "%";
-            document.getElementById('precisionKpi').className = `text-4xl font-black ${precision < 95 ? 'text-rose-600' : 'text-slate-800'}`;
+            document.getElementById('precisionKpi').className = `text-4xl font-black ${precision < 98 ? 'text-rose-600' : 'text-slate-800'}`;
         }
-
-        window.onload = cargarTabla;
     </script>
 </body>
 </html>
