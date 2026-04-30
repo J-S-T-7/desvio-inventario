@@ -3,94 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario - Desvío de Productos</title>
+    <title>Desvío de Inventario - Datos Reales</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-4">
     <div class="max-w-6xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden">
-        <div class="bg-slate-800 p-6">
-            <h1 class="text-white text-3xl font-bold text-center">CÁLCULO DE DESVÍO DE INVENTARIO</h1>
-            <p class="text-slate-400 text-center mt-2">Versión Completa - 53 Productos</p>
+        <div class="bg-blue-900 p-6">
+            <h1 class="text-white text-3xl font-bold text-center italic">DESVÍO PRODUCTOS TERMINADOS</h1>
+            <p class="text-blue-300 text-center mt-2 font-mono">Control de Cajas y Formatos Reales</p>
         </div>
 
-        <!-- Panel de Entrada -->
-        <div class="p-6 bg-slate-50 border-b grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Panel de Registro -->
+        <div class="p-6 bg-blue-50 border-b grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div class="lg:col-span-2">
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase">Producto</label>
-                <select id="producto" class="w-full p-3 border-2 border-slate-200 rounded-lg focus:border-blue-500 outline-none transition-all">
-                    <optgroup label="Hamburguesas y Seitan (Pack/Unit)">
+                <label class="block text-xs font-black text-blue-900 mb-2 tracking-tighter">PRODUCTO / FORMATO</label>
+                <select id="producto" class="w-full p-3 border-2 border-blue-200 rounded-lg focus:ring-4 focus:ring-blue-200 outline-none transition-all">
+                    <optgroup label="Packs y Unidades">
                         <option value="12">BIFE VEG - Pack (x12)</option>
                         <option value="20">CHAPARRITA SALCHI ROLL (x20)</option>
                         <option value="12">CHORIZO VEGGIE - PACK (x12)</option>
                         <option value="20">HAMBURGUESA DARK SIDE UNITARIA (x20)</option>
                         <option value="20">HAMBURGUESA DE SEITAN UNITARIA (x20)</option>
-                        <option value="12">HAMBURGUESA GARBANZO - PACK (x12)</option>
-                        <option value="12">HAMBURGUESA SEITAN - Pack (x12)</option>
-                        <option value="12">SEITAN DEL BUENO CHURRASCO CARNE (x12)</option>
-                        <option value="12">SEITAN DEL BUENO CHURRASCO TRADICIONAL (x12)</option>
-                        <option value="12">SEITAN DEL BUENO TROCITOS CARNE (x12)</option>
-                        <option value="12">SEITAN DEL BUENO TROCITOS TRADICIONAL (x12)</option>
-                    </optgroup>
-                    <optgroup label="Quesos y Bloques (Conv. 2.5/20)">
-                        <option value="2.5">QUESO VEGAN CHEDDY 1 KILO (Bloque 2.5)</option>
-                        <option value="2.5">QUESO MOZZARELA MAMA MOZA POR KILO (Bloque 2.5)</option>
-                        <option value="2.5">QUESO MOZZARELA VEGAN MOZA POR KILO (Bloque 2.5)</option>
-                        <option value="20">QUESO CHEDDAR MAMA MOZA BLOQUE 2,5 (x20)</option>
-                        <option value="2.5">QUESO MAMA MOZA GRANULADO (Bloque 2.5)</option>
-                        <option value="20">QUESO MOZZARELLA MAMA MOZA BLOQUE 2,5 (x20)</option>
-                        <option value="20">QUESO VEGAN CHEDDY VEGUSTA BLOQUE 2,5 (x20)</option>
-                        <option value="20">QUESO VEGAN MOZZA VEGUSTA BLOQUE 2,5 (x20)</option>
-                        <option value="2.5">QUESO VEGAN CHEDDY VEGUSTA GRANULADO (Bloque 2.5)</option>
-                        <option value="2.5">QUESO VEGAN MOZZA VEGUSTA GRANULADO (Bloque 2.5)</option>
-                        <option value="12">QUESO VEGAN CHEDDY VEGUSTA Pack 200g (x12)</option>
-                        <option value="12">QUESO VEGAN MOZZA VEGUSTA PACK 200G (x12)</option>
-                    </optgroup>
-                    <optgroup label="Salchichas y Otros Packs">
-                        <option value="12">SALCHICHA VEGUSTA HAPPY DOGS - PACK (x12)</option>
-                        <option value="12">VIENESA VEGGIE - PACK (x12)</option>
-                        <option value="12">JAMONADA VEG - PACK (x12)</option>
-                        <option value="20">JAMON AHUMADO VEG - PACK (x20)</option>
-                        <option value="10">JAMON DORADO - PACK (x10)</option>
-                        <option value="6">TOFU VEGUSTA 1 kg (x6)</option>
-                        <option value="6">TOFU VEGUSTA 500 GRS (x6)</option>
-                        <option value="12">VEGAN ROLL PACK 10 UNID (x12)</option>
-                        <option value="12">VEGGIEBALL DOYPACK 8 UNID (x12)</option>
-                        <option value="20">VEGGIEBALL HORECA (x20)</option>
-                    </optgroup>
-                    <optgroup label="Salsas y Otros">
+                        <option value="8">HAMBURGUESA SEITAN - Pack (x8)</option>
                         <option value="12">SALSA CHEDDAR 350 GRS DOYPACK (x12)</option>
                         <option value="12">MAYONESA V 350 GRS DOYPACK (x12)</option>
-                        <option value="2.5">MECHADA VEGGIE 500 GRS (Conv 2.5)</option>
-                        <option value="2.5">Gluten vital de trigo (Conv 2.5)</option>
+                        <option value="10">JAMONADA VEG - PACK (x10)</option>
+                        <option value="20">JAMON AHUMADO VEG - PACK (x20)</option>
+                        <option value="10">JAMON DORADO - PACK (x10)</option>
+                        <option value="10">QUESO CHEDDAR 200 GR VEGANO (x10)</option>
+                        <option value="10">QUESO MOZZARELLA 200 GR VEGANO (x10)</option>
+                        <option value="10">QUESO VEGAN CHEDDY VEGUSTA Pack 200g (x10)</option>
+                        <option value="10">QUESO VEGAN MOZZA VEGUSTA PACK 200G (x10)</option>
+                        <option value="20">SALCHICHA VEGUSTA HAPPY DOGS - PACK (x20)</option>
+                        <option value="10">SEITAN CHURRASCO CARNE/TRADICIONAL (x10)</option>
+                        <option value="10">SEITAN TROCITOS CARNE/TRADICIONAL (x10)</option>
+                        <option value="6">TOFU VEGUSTA 1 kg / 500 GRS (x6)</option>
+                        <option value="12">VEGAN ROLL PACK 10 UNID (x12)</option>
+                        <option value="8">VEGGIEBALL DOYPACK 8 UNIDADES (x8)</option>
+                        <option value="120">VEGGIEBALL HORECA (x120)</option>
+                        <option value="20">VIENESA VEGGIE - PACK (x20)</option>
                     </optgroup>
-                    <optgroup label="Granel (Divisor 1)">
-                        <option value="1">CHORIZO VEGGIE - GRANEL</option>
-                        <option value="1">HAMB POROTO NEGRO - GRANEL</option>
-                        <option value="1">HAMBURGUESA DARK SIDE HORECA</option>
-                        <option value="1">HAMBURGUESA GARBANZO - GRANEL</option>
-                        <option value="1">HAMBURGUESA LENTEJA - GRANEL</option>
-                        <option value="1">HAMBURGUESA SEITAN - GRANEL</option>
-                        <option value="1">HORECA - MAYONESA GRANEL</option>
-                        <option value="1">HORECA - SALSA CHEDDAR GRANEL</option>
-                        <option value="1">JAMON AHUMADO HORECA</option>
-                        <option value="1">JAMON AHUMADO DESPUNTE</option>
-                        <option value="1">SALCHICHA HAPPY DOGS GRANEL</option>
-                        <option value="1">SALCHICHA VEGUSTA PLANT B GRANEL</option>
-                        <option value="1">VIENESA VEGGIE - GRANEL</option>
-                        <option value="1">VEGAN ROLL GRANEL CAJA 100 UNID</option>
+                    <optgroup label="Granel y Pesaje (KG/Bloques)">
+                        <option value="2.5">QUESOS BLOQUE / GRANULADO (Conv. 2.5kg)</option>
+                        <option value="3">MECHADA VEGGIE 500 GRS (Caja 3kg)</option>
+                        <option value="2.5">GLUTEN VITAL DE TRIGO (Conv. 2.5kg)</option>
+                        <option value="1">PRODUCTOS A GRANEL (Caja x1)</option>
                     </optgroup>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase">Stock Odoo (D)</label>
-                <input type="number" id="odoo" class="w-full p-3 border-2 border-slate-200 rounded-lg outline-none focus:border-blue-500" placeholder="Ej: 135">
+                <label class="block text-xs font-black text-blue-900 mb-2 tracking-tighter">ODOO (SISTEMA)</label>
+                <input type="number" id="odoo" class="w-full p-3 border-2 border-blue-200 rounded-lg outline-none focus:border-blue-600" placeholder="0">
             </div>
             <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase">Stock Real (G)</label>
-                <input type="number" id="real" class="w-full p-3 border-2 border-slate-200 rounded-lg outline-none focus:border-blue-500" placeholder="Ej: 11">
+                <label class="block text-xs font-black text-blue-900 mb-2 tracking-tighter">STOCK FÍSICO</label>
+                <input type="number" id="real" class="w-full p-3 border-2 border-blue-200 rounded-lg outline-none focus:border-blue-600" placeholder="0">
             </div>
-            <button onclick="calcular()" class="lg:col-span-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-lg shadow-lg transform transition active:scale-95">
-                REGISTRAR DESVÍO SEMANAL
+            <button onclick="registrar()" class="lg:col-span-4 bg-blue-600 hover:bg-blue-800 text-white font-black py-4 rounded-lg shadow-lg transition active:scale-95 uppercase tracking-widest">
+                Calcular Desvío
             </button>
         </div>
 
@@ -98,79 +68,76 @@
         <div class="p-6 overflow-x-auto">
             <table class="w-full border-collapse">
                 <thead>
-                    <tr class="bg-slate-100 text-slate-600 text-xs uppercase text-left">
+                    <tr class="bg-gray-100 text-gray-700 text-xs uppercase text-left">
                         <th class="p-4 border-b">Producto</th>
-                        <th class="p-4 border-b">Cajas Odoo (F)</th>
-                        <th class="p-4 border-b">Stock Real (G)</th>
-                        <th class="p-4 border-b">Desvío (H)</th>
-                        <th class="p-4 border-b">% Desvío (I)</th>
+                        <th class="p-4 border-b">Eq. Cajas (Odoo)</th>
+                        <th class="p-4 border-b">Físico</th>
+                        <th class="p-4 border-b">Diferencia</th>
+                        <th class="p-4 border-b">% Desvío</th>
                         <th class="p-4 border-b text-center">Estado</th>
                     </tr>
                 </thead>
-                <tbody id="filas" class="divide-y divide-slate-100"></tbody>
+                <tbody id="filas" class="divide-y divide-gray-100"></tbody>
             </table>
         </div>
 
-        <!-- KPI Footer -->
-        <div class="bg-slate-50 p-8 border-t flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 bg-indigo-600 rounded-full animate-pulse"></div>
-                <span class="font-bold text-slate-600 uppercase tracking-widest text-sm">Resumen de Gestión</span>
-            </div>
+        <!-- Footer KPI -->
+        <div class="bg-blue-900 p-8 border-t flex flex-col md:flex-row justify-between items-center text-white">
+            <p class="font-bold text-blue-200 uppercase tracking-widest text-sm">Resumen de Inventario Semanal</p>
             <div class="text-center md:text-right">
-                <p class="text-xs font-bold text-slate-400 uppercase">KPI Desvío Promedio</p>
-                <p id="kpi" class="text-4xl font-black text-slate-800">0.00%</p>
+                <p class="text-xs font-bold text-blue-300 uppercase">KPI Desvío General</p>
+                <p id="kpi" class="text-5xl font-black italic">0.00%</p>
             </div>
         </div>
     </div>
 
     <script>
-        let desvios = [];
+        let desviacionesAbsolutas = [];
 
-        function calcular() {
+        function registrar() {
             const prod = document.getElementById('producto');
             const nombre = prod.options[prod.selectedIndex].text;
-            const div = parseFloat(prod.value);
+            const divisor = parseFloat(prod.value);
             const odoo = parseFloat(document.getElementById('odoo').value);
             const real = parseFloat(document.getElementById('real').value);
 
-            if (isNaN(odoo) || isNaN(real)) return alert("Ingresa valores numéricos");
+            if (isNaN(odoo) || isNaN(real)) return alert("Ingresa valores válidos.");
 
-            const cajasF = odoo / div;
-            const desvioH = real - cajasF;
-            const porcI = cajasF === 0 ? (real === 0 ? 0 : 1) : (desvioH / cajasF);
+            const cajasOdoo = odoo / divisor;
+            const diferencia = real - cajasOdoo;
+            const porcentaje = cajasOdoo === 0 ? 0 : (diferencia / cajasOdoo);
 
-            let color = "bg-emerald-100 text-emerald-700";
-            let status = "OK";
+            let colorEstado = "bg-green-100 text-green-800";
+            let textoEstado = "OK";
 
-            if (Math.abs(porcI) > 0.005) {
-                if (porcI > 0) {
-                    color = "bg-sky-100 text-sky-700";
-                    status = "SOBRANTE";
+            if (Math.abs(porcentaje) > 0.005) {
+                if (porcentaje > 0) {
+                    colorEstado = "bg-blue-100 text-blue-800";
+                    textoEstado = "SOBRANTE";
                 } else {
-                    color = "bg-rose-100 text-rose-700";
-                    status = "FALTANTE";
+                    colorEstado = "bg-red-100 text-red-800";
+                    textoEstado = "FALTANTE";
                 }
             }
 
-            const row = `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-4 font-semibold text-slate-700">${nombre}</td>
-                    <td class="p-4 text-slate-500">${cajasF.toFixed(2)}</td>
-                    <td class="p-4 font-bold text-slate-800">${real}</td>
-                    <td class="p-4 font-bold ${desvioH < 0 ? 'text-rose-600' : 'text-sky-600'}">${desvioH.toFixed(2)}</td>
-                    <td class="p-4 font-medium">${(porcI * 100).toFixed(2)}%</td>
+            const nuevaFila = `
+                <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="p-4 font-bold text-gray-800">${nombre}</td>
+                    <td class="p-4 text-gray-600">${cajasOdoo.toFixed(2)}</td>
+                    <td class="p-4 font-black text-blue-900">${real}</td>
+                    <td class="p-4 font-bold ${diferencia < 0 ? 'text-red-600' : 'text-blue-600'}">${diferencia.toFixed(2)}</td>
+                    <td class="p-4 font-mono font-bold">${(porcentaje * 100).toFixed(2)}%</td>
                     <td class="p-4 text-center">
-                        <span class="px-3 py-1 rounded-full text-xs font-black uppercase shadow-sm ${color}">${status}</span>
+                        <span class="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${colorEstado}">${textoEstado}</span>
                     </td>
                 </tr>
             `;
 
-            document.getElementById('filas').insertAdjacentHTML('afterbegin', row);
-            desvios.push(Math.abs(porcI));
+            document.getElementById('filas').insertAdjacentHTML('afterbegin', nuevaFila);
+            desviacionesAbsolutas.push(Math.abs(porcentaje));
             
-            const kpi = (desvios.reduce((a, b) => a + b, 0) / desvios.length) * 100;
-            document.getElementById('kpi').innerText = kpi.toFixed(2) + "%";
+            const promedio = (desviacionesAbsolutas.reduce((a, b) => a + b, 0) / desviacionesAbsolutas.length) * 100;
+            document.getElementById('kpi').innerText = promedio.toFixed(2) + "%";
 
             document.getElementById('odoo').value = "";
             document.getElementById('real').value = "";
