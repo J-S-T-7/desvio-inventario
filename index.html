@@ -3,64 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desvío de Inventario - Datos Reales</title>
+    <title>Desvío de Inventario - Ajuste Gluten</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-4">
     <div class="max-w-6xl mx-auto bg-white shadow-2xl rounded-xl overflow-hidden">
-        <div class="bg-blue-900 p-6">
-            <h1 class="text-white text-3xl font-bold text-center italic">DESVÍO PRODUCTOS TERMINADOS</h1>
-            <p class="text-blue-300 text-center mt-2 font-mono">Control de Cajas y Formatos Reales</p>
+        <div class="bg-slate-900 p-6">
+            <h1 class="text-white text-3xl font-bold text-center tracking-tight">CONTROL DE DESVÍO DE INVENTARIO</h1>
+            <p class="text-slate-400 text-center mt-2 font-mono uppercase text-xs">Ajuste técnico: Gluten Vital 25kg</p>
         </div>
 
         <!-- Panel de Registro -->
-        <div class="p-6 bg-blue-50 border-b grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="p-6 bg-slate-50 border-b grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div class="lg:col-span-2">
-                <label class="block text-xs font-black text-blue-900 mb-2 tracking-tighter">PRODUCTO / FORMATO</label>
-                <select id="producto" class="w-full p-3 border-2 border-blue-200 rounded-lg focus:ring-4 focus:ring-blue-200 outline-none transition-all">
-                    <optgroup label="Packs y Unidades">
-                        <option value="12">BIFE VEG - Pack (x12)</option>
-                        <option value="20">CHAPARRITA SALCHI ROLL (x20)</option>
-                        <option value="12">CHORIZO VEGGIE - PACK (x12)</option>
-                        <option value="20">HAMBURGUESA DARK SIDE UNITARIA (x20)</option>
-                        <option value="20">HAMBURGUESA DE SEITAN UNITARIA (x20)</option>
-                        <option value="8">HAMBURGUESA SEITAN - Pack (x8)</option>
-                        <option value="12">SALSA CHEDDAR 350 GRS DOYPACK (x12)</option>
-                        <option value="12">MAYONESA V 350 GRS DOYPACK (x12)</option>
-                        <option value="10">JAMONADA VEG - PACK (x10)</option>
-                        <option value="20">JAMON AHUMADO VEG - PACK (x20)</option>
-                        <option value="10">JAMON DORADO - PACK (x10)</option>
-                        <option value="10">QUESO CHEDDAR 200 GR VEGANO (x10)</option>
-                        <option value="10">QUESO MOZZARELLA 200 GR VEGANO (x10)</option>
-                        <option value="10">QUESO VEGAN CHEDDY VEGUSTA Pack 200g (x10)</option>
-                        <option value="10">QUESO VEGAN MOZZA VEGUSTA PACK 200G (x10)</option>
-                        <option value="20">SALCHICHA VEGUSTA HAPPY DOGS - PACK (x20)</option>
-                        <option value="10">SEITAN CHURRASCO CARNE/TRADICIONAL (x10)</option>
-                        <option value="10">SEITAN TROCITOS CARNE/TRADICIONAL (x10)</option>
-                        <option value="6">TOFU VEGUSTA 1 kg / 500 GRS (x6)</option>
-                        <option value="12">VEGAN ROLL PACK 10 UNID (x12)</option>
-                        <option value="8">VEGGIEBALL DOYPACK 8 UNIDADES (x8)</option>
-                        <option value="120">VEGGIEBALL HORECA (x120)</option>
-                        <option value="20">VIENESA VEGGIE - PACK (x20)</option>
-                    </optgroup>
-                    <optgroup label="Granel y Pesaje (KG/Bloques)">
-                        <option value="2.5">QUESOS BLOQUE / GRANULADO (Conv. 2.5kg)</option>
+                <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Producto Seleccionado</label>
+                <select id="producto" class="w-full p-3 border-2 border-slate-200 rounded-lg focus:border-indigo-500 outline-none transition-all font-medium">
+                    <optgroup label="Materias Primas / Gran Formato">
+                        <option value="25">GLUTEN VITAL DE TRIGO (Saco 25kg)</option>
                         <option value="3">MECHADA VEGGIE 500 GRS (Caja 3kg)</option>
-                        <option value="2.5">GLUTEN VITAL DE TRIGO (Conv. 2.5kg)</option>
+                    </optgroup>
+                    <optgroup label="Quesos (Bloques y Granulados)">
+                        <option value="2.5">QUESOS BLOQUE / GRANULADO (Conv. 2.5kg)</option>
+                        <option value="10">QUESO VEGANO 200 GR (Pack x10)</option>
+                    </optgroup>
+                    <optgroup label="Embutidos y Hamburguesas">
+                        <option value="20">SALCHICHA / CHAPARRITA / VIENESA (Pack x20)</option>
+                        <option value="12">BIFE / CHORIZO / VEGAN ROLL (Pack x12)</option>
+                        <option value="8">HAMBURGUESA SEITAN / VEGGIEBALL (Pack x8)</option>
+                        <option value="120">VEGGIEBALL HORECA (Caja x120)</option>
+                        <option value="10">SEITAN DEL BUENO 500GR (Pack x10)</option>
+                    </optgroup>
+                    <optgroup label="Otros">
+                        <option value="6">TOFU 1kg / 500g (Pack x6)</option>
                         <option value="1">PRODUCTOS A GRANEL (Caja x1)</option>
                     </optgroup>
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-black text-blue-900 mb-2 tracking-tighter">ODOO (SISTEMA)</label>
-                <input type="number" id="odoo" class="w-full p-3 border-2 border-blue-200 rounded-lg outline-none focus:border-blue-600" placeholder="0">
+                <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Stock Sistema (Odoo)</label>
+                <input type="number" id="odoo" class="w-full p-3 border-2 border-slate-200 rounded-lg outline-none focus:border-indigo-500" placeholder="0.00">
             </div>
             <div>
-                <label class="block text-xs font-black text-blue-900 mb-2 tracking-tighter">STOCK FÍSICO</label>
-                <input type="number" id="real" class="w-full p-3 border-2 border-blue-200 rounded-lg outline-none focus:border-blue-600" placeholder="0">
+                <label class="block text-xs font-black text-slate-500 mb-2 uppercase">Stock Real (Físico)</label>
+                <input type="number" id="real" class="w-full p-3 border-2 border-slate-200 rounded-lg outline-none focus:border-indigo-500" placeholder="0">
             </div>
-            <button onclick="registrar()" class="lg:col-span-4 bg-blue-600 hover:bg-blue-800 text-white font-black py-4 rounded-lg shadow-lg transition active:scale-95 uppercase tracking-widest">
-                Calcular Desvío
+            <button onclick="registrar()" class="lg:col-span-4 bg-indigo-600 hover:bg-indigo-800 text-white font-black py-4 rounded-lg shadow-lg transition active:scale-95 uppercase">
+                Calcular y Agregar a la Lista
             </button>
         </div>
 
@@ -68,31 +56,31 @@
         <div class="p-6 overflow-x-auto">
             <table class="w-full border-collapse">
                 <thead>
-                    <tr class="bg-gray-100 text-gray-700 text-xs uppercase text-left">
+                    <tr class="bg-slate-100 text-slate-600 text-[10px] uppercase text-left tracking-widest">
                         <th class="p-4 border-b">Producto</th>
-                        <th class="p-4 border-b">Eq. Cajas (Odoo)</th>
+                        <th class="p-4 border-b">Cajas Odoo</th>
                         <th class="p-4 border-b">Físico</th>
                         <th class="p-4 border-b">Diferencia</th>
                         <th class="p-4 border-b">% Desvío</th>
                         <th class="p-4 border-b text-center">Estado</th>
                     </tr>
                 </thead>
-                <tbody id="filas" class="divide-y divide-gray-100"></tbody>
+                <tbody id="filas" class="divide-y divide-slate-100"></tbody>
             </table>
         </div>
 
         <!-- Footer KPI -->
-        <div class="bg-blue-900 p-8 border-t flex flex-col md:flex-row justify-between items-center text-white">
-            <p class="font-bold text-blue-200 uppercase tracking-widest text-sm">Resumen de Inventario Semanal</p>
+        <div class="bg-slate-900 p-8 border-t flex flex-col md:flex-row justify-between items-center text-white">
+            <span class="font-bold text-slate-500 uppercase tracking-widest text-xs">Mesa de Ayuda - Control de Inventario</span>
             <div class="text-center md:text-right">
-                <p class="text-xs font-bold text-blue-300 uppercase">KPI Desvío General</p>
-                <p id="kpi" class="text-5xl font-black italic">0.00%</p>
+                <p class="text-[10px] font-bold text-indigo-400 uppercase">Margen de Error Promedio</p>
+                <p id="kpi" class="text-4xl font-black">0.00%</p>
             </div>
         </div>
     </div>
 
     <script>
-        let desviacionesAbsolutas = [];
+        let historialDesvios = [];
 
         function registrar() {
             const prod = document.getElementById('producto');
@@ -101,42 +89,42 @@
             const odoo = parseFloat(document.getElementById('odoo').value);
             const real = parseFloat(document.getElementById('real').value);
 
-            if (isNaN(odoo) || isNaN(real)) return alert("Ingresa valores válidos.");
+            if (isNaN(odoo) || isNaN(real)) return alert("Por favor, ingresa valores válidos.");
 
-            const cajasOdoo = odoo / divisor;
-            const diferencia = real - cajasOdoo;
-            const porcentaje = cajasOdoo === 0 ? 0 : (diferencia / cajasOdoo);
+            const cajasTeoricas = odoo / divisor;
+            const diferencia = real - cajasTeoricas;
+            const porcentaje = cajasTeoricas === 0 ? 0 : (diferencia / cajasTeoricas);
 
-            let colorEstado = "bg-green-100 text-green-800";
-            let textoEstado = "OK";
+            let estilo = "bg-emerald-100 text-emerald-800";
+            let etiqueta = "OK";
 
-            if (Math.abs(porcentaje) > 0.005) {
+            if (Math.abs(porcentaje) > 0.001) { // Tolerancia mínima
                 if (porcentaje > 0) {
-                    colorEstado = "bg-blue-100 text-blue-800";
-                    textoEstado = "SOBRANTE";
+                    estilo = "bg-amber-100 text-amber-800";
+                    etiqueta = "SOBRANTE";
                 } else {
-                    colorEstado = "bg-red-100 text-red-800";
-                    textoEstado = "FALTANTE";
+                    estilo = "bg-rose-100 text-rose-800";
+                    etiqueta = "FALTANTE";
                 }
             }
 
-            const nuevaFila = `
-                <tr class="hover:bg-blue-50 transition-colors">
-                    <td class="p-4 font-bold text-gray-800">${nombre}</td>
-                    <td class="p-4 text-gray-600">${cajasOdoo.toFixed(2)}</td>
-                    <td class="p-4 font-black text-blue-900">${real}</td>
-                    <td class="p-4 font-bold ${diferencia < 0 ? 'text-red-600' : 'text-blue-600'}">${diferencia.toFixed(2)}</td>
+            const tr = `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4 font-bold text-slate-800">${nombre}</td>
+                    <td class="p-4 text-slate-500">${cajasTeoricas.toFixed(2)}</td>
+                    <td class="p-4 font-black text-slate-900">${real}</td>
+                    <td class="p-4 font-bold ${diferencia < 0 ? 'text-rose-600' : 'text-emerald-600'}">${diferencia.toFixed(2)}</td>
                     <td class="p-4 font-mono font-bold">${(porcentaje * 100).toFixed(2)}%</td>
                     <td class="p-4 text-center">
-                        <span class="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${colorEstado}">${textoEstado}</span>
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${estilo}">${etiqueta}</span>
                     </td>
                 </tr>
             `;
 
-            document.getElementById('filas').insertAdjacentHTML('afterbegin', nuevaFila);
-            desviacionesAbsolutas.push(Math.abs(porcentaje));
+            document.getElementById('filas').insertAdjacentHTML('afterbegin', tr);
+            historialDesvios.push(Math.abs(porcentaje));
             
-            const promedio = (desviacionesAbsolutas.reduce((a, b) => a + b, 0) / desviacionesAbsolutas.length) * 100;
+            const promedio = (historialDesvios.reduce((a, b) => a + b, 0) / historialDesvios.length) * 100;
             document.getElementById('kpi').innerText = promedio.toFixed(2) + "%";
 
             document.getElementById('odoo').value = "";
