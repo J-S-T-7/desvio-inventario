@@ -3,108 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soporte Técnico - Auditoría de Inventario</title>
+    <title>Soporte Técnico - Inventario Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Librería para exportar a Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.min.js"></script>
     <style>
-        /* Optimización para comodidad visual */
-        .row-active:focus-within { background-color: #f1f5f9 !important; }
-        input:focus { transform: scale(1.02); transition: all 0.2s; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white; padding: 0; }
-            .shadow-xl { box-shadow: none !important; border: 1px solid #e2e8f0; }
-            .print-table { border: 1px solid #000; }
-            .sticky-header { position: static !important; }
-        }
-        
+        .row-active:focus-within { background-color: #f8fafc !important; }
         .sticky-header { position: sticky; top: 0; z-index: 10; }
+        @media print { .no-print { display: none !important; } }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="bg-[#f8fafc] p-2 md:p-6 font-sans text-slate-800">
+<body class="bg-slate-50 p-2 md:p-6 font-sans text-slate-800">
 
     <div class="max-w-[1200px] mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-200">
         
-        <!-- CABECERA ESTILO DASHBOARD -->
-        <header class="bg-[#0f172a] p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b-4 border-indigo-500">
+        <!-- HEADER -->
+        <header class="bg-[#1e293b] p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b-4 border-indigo-500">
             <div class="flex items-center gap-4">
-                <div class="bg-indigo-500 p-2 rounded-lg">
+                <div class="bg-indigo-500 p-2 rounded-lg shadow-inner">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-white text-xl font-black uppercase tracking-tight">Control de Existencias</h1>
-                    <p class="text-indigo-300 text-[10px] font-mono tracking-widest uppercase">Inventory System v3.0 | Soporte Técnico</p>
+                    <h1 class="text-white text-xl font-black uppercase tracking-tight">Auditoría de Stock</h1>
+                    <p class="text-indigo-300 text-[10px] font-mono tracking-widest uppercase">Mesa de Ayuda | Reporte Exportable</p>
                 </div>
             </div>
-            <div class="flex flex-col items-end gap-1">
-                <span id="fechaActual" class="text-slate-400 text-[11px] font-medium"></span>
-                <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold text-xs transition-all shadow-lg active:scale-95">
-                    GENERAR REPORTE PDF
+            <div class="flex gap-2 no-print">
+                <button onclick="exportarExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition shadow-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    EXCEL
+                </button>
+                <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition shadow-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    PDF
                 </button>
             </div>
         </header>
 
-        <!-- DASHBOARD DE MÉTRICAS -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border-b border-slate-100">
-            <div class="p-6 flex flex-col items-center justify-center border-r border-slate-100 bg-slate-50/50">
-                <canvas id="chartEstados" style="max-height: 140px;"></canvas>
-            </div>
+        <!-- DASHBOARD -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-0 border-b border-slate-100 bg-slate-50/30">
             <div class="p-6 flex flex-col items-center justify-center border-r border-slate-100">
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Precisión General</span>
-                <div class="flex items-baseline gap-1">
-                    <span id="precisionKpi" class="text-5xl font-black text-slate-800 tracking-tighter">100%</span>
-                </div>
-                <div id="statusIndicator" class="mt-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[9px] font-bold uppercase">Estado: Óptimo</div>
+                <canvas id="chartEstados" style="max-height: 120px;"></canvas>
             </div>
-            <div class="p-6 flex flex-col justify-center gap-4 bg-slate-50/50">
-                <div class="flex justify-between items-center">
-                    <span class="text-[11px] font-bold text-slate-500 uppercase">Faltantes Críticos:</span>
-                    <span id="totalFaltantes" class="text-xl font-black text-rose-600">0</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-[11px] font-bold text-slate-500 uppercase">Ítems Revisados:</span>
-                    <span id="totalRevisados" class="text-xl font-black text-slate-700">0/50</span>
-                </div>
+            <div class="p-6 flex flex-col items-center justify-center">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-1">Precisión de Inventario</span>
+                <span id="precisionKpi" class="text-6xl font-black text-slate-800 tracking-tighter">100%</span>
+                <p id="fechaActual" class="text-[10px] text-slate-400 mt-2 font-mono uppercase"></p>
             </div>
         </div>
 
-        <!-- TABLA DE TRABAJO -->
+        <!-- TABLA -->
         <div class="overflow-x-auto">
-            <table class="w-full border-collapse">
+            <table id="tablaDatos" class="w-full border-collapse">
                 <thead class="sticky-header shadow-sm">
-                    <tr class="bg-slate-800 text-white text-[10px] uppercase tracking-wider">
-                        <th class="p-4 text-left">Referencia</th>
+                    <tr class="bg-slate-800 text-white text-[10px] uppercase">
+                        <th class="p-4 text-left">Ref.</th>
                         <th class="p-4 text-left">Producto</th>
                         <th class="p-4 text-center">Factor</th>
-                        <th class="p-4 w-28">Odoo (kg/u)</th>
-                        <th class="p-4 w-28">Físico (kg/u)</th>
+                        <th class="p-4 w-24">Odoo</th>
+                        <th class="p-4 w-24">Físico</th>
                         <th class="p-4 text-right">Dif. Cajas</th>
                         <th class="p-4 text-center">Estado</th>
                     </tr>
                 </thead>
-                <tbody id="cuerpoTabla" class="divide-y divide-slate-100 text-[12px]">
-                    <!-- Datos inyectados por JS -->
-                </tbody>
+                <tbody id="cuerpoTabla" class="divide-y divide-slate-100 text-[12px]"></tbody>
             </table>
         </div>
-
-        <!-- FOOTER / FIRMAS -->
-        <footer class="p-10 bg-slate-50 border-t border-slate-200">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-[800px] mx-auto">
-                <div class="text-center">
-                    <div class="h-[1px] bg-slate-300 mb-3 mx-auto w-48"></div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase">Responsable de Inventario</p>
-                </div>
-                <div class="text-center">
-                    <div class="h-[1px] bg-slate-300 mb-3 mx-auto w-48"></div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase">Soporte Técnico / Auditoría</p>
-                </div>
-            </div>
-        </footer>
     </div>
 
     <script>
@@ -161,54 +133,36 @@
             { id: "PTKT3148", nom: "VEGAN ROLL GRANEL CAJA 100 UNID", div: 1 }
         ];
 
-        document.getElementById('fechaActual').innerText = new Date().toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'short' });
-        const tbody = document.getElementById('cuerpoTabla');
         let valores = data.map(() => ({ odoo: 0, real: 0 }));
         let myChart;
 
-        // Renderizado
-        data.forEach((p, i) => {
-            const row = `
-                <tr class="row-active transition-colors group">
-                    <td class="p-4 font-mono font-bold text-indigo-500 bg-slate-50/30">${p.id}</td>
-                    <td class="p-4 font-bold text-slate-600 uppercase tracking-tight">${p.nom}</td>
-                    <td class="p-4 text-center font-bold text-slate-400 border-x border-slate-50">${p.div}</td>
-                    <td class="p-3">
-                        <input type="number" step="any" oninput="calc(${i}, this.value, 'odoo')" class="no-print w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-right font-bold text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
-                        <span class="hidden print:block text-right font-bold">${valores[i].odoo}</span>
-                    </td>
-                    <td class="p-3">
-                        <input type="number" step="any" oninput="calc(${i}, this.value, 'real')" class="no-print w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-right font-bold text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
-                        <span class="hidden print:block text-right font-bold">${valores[i].real}</span>
-                    </td>
-                    <td class="p-4 text-right font-black text-sm" id="dif-${i}">0.00</td>
-                    <td class="p-4 text-center" id="stat-${i}">
-                        <span class="text-slate-300 font-black">--</span>
-                    </td>
-                </tr>
-            `;
-            tbody.insertAdjacentHTML('beforeend', row);
-        });
-
-        function initChart() {
+        function init() {
+            document.getElementById('fechaActual').innerText = new Date().toLocaleDateString();
+            const tbody = document.getElementById('cuerpoTabla');
+            data.forEach((p, i) => {
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="row-active transition-colors">
+                        <td class="p-4 font-mono font-bold text-indigo-500">${p.id}</td>
+                        <td class="p-4 font-semibold text-slate-600 uppercase">${p.nom}</td>
+                        <td class="p-4 text-center font-bold text-slate-400 border-x border-slate-50">${p.div}</td>
+                        <td class="p-2">
+                            <input type="number" oninput="calc(${i}, this.value, 'odoo')" class="no-print w-full bg-slate-50 border rounded p-2 text-right outline-none focus:border-indigo-500">
+                            <span class="hidden print:block text-right">${valores[i].odoo}</span>
+                        </td>
+                        <td class="p-2">
+                            <input type="number" oninput="calc(${i}, this.value, 'real')" class="no-print w-full bg-slate-50 border rounded p-2 text-right outline-none focus:border-indigo-500">
+                            <span class="hidden print:block text-right">${valores[i].real}</span>
+                        </td>
+                        <td class="p-4 text-right font-black" id="dif-${i}">0.00</td>
+                        <td class="p-4 text-center" id="stat-${i}"><span class="text-slate-300 italic">--</span></td>
+                    </tr>
+                `);
+            });
             const ctx = document.getElementById('chartEstados').getContext('2d');
             myChart = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
-                    labels: ['CONFORME', 'FALTANTE', 'SOBRANTE'],
-                    datasets: [{
-                        data: [0, 0, 0],
-                        backgroundColor: ['#10b981', '#f43f5e', '#6366f1'],
-                        hoverOffset: 4,
-                        borderWidth: 0
-                    }]
-                },
-                options: { 
-                    cutout: '75%', 
-                    plugins: { 
-                        legend: { display: true, position: 'bottom', labels: { boxWidth: 8, font: { size: 9, weight: '900' }, padding: 15 } } 
-                    } 
-                }
+                data: { labels: ['OK', 'Faltante', 'Sobrante'], datasets: [{ data: [0, 0, 0], backgroundColor: ['#10b981', '#f43f5e', '#6366f1'], borderWidth: 0 }] },
+                options: { cutout: '75%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9, weight: 'bold' } } } } }
             });
         }
 
@@ -220,28 +174,22 @@
             const boxOdoo = valores[i].odoo / data[i].div;
             const dif = valores[i].real - boxOdoo;
             
-            const elDif = document.getElementById(`dif-${i}`);
-            elDif.innerText = dif.toFixed(2);
-            elDif.className = `p-4 text-right font-black ${dif < -0.01 ? 'text-rose-600' : (dif > 0.01 ? 'text-indigo-600' : 'text-slate-800')}`;
-
+            document.getElementById(`dif-${i}`).innerText = dif.toFixed(2);
             const elStat = document.getElementById(`stat-${i}`);
             if (Math.abs(dif) < 0.01) {
-                elStat.innerHTML = '<span class="text-emerald-500 font-black text-[10px] bg-emerald-50 px-2 py-1 rounded border border-emerald-100 uppercase">Ok</span>';
+                elStat.innerHTML = '<span class="text-emerald-500 font-bold uppercase text-[10px]">Ok</span>';
             } else {
-                const color = dif < 0 ? 'rose' : 'indigo';
-                elStat.innerHTML = `<span class="text-${color}-600 font-black text-[10px] bg-${color}-50 px-2 py-1 rounded border border-${color}-100 uppercase">${dif < 0 ? 'Faltante' : 'Sobrante'}</span>`;
+                elStat.innerHTML = `<span class="text-${dif < 0 ? 'rose' : 'indigo'}-500 font-bold uppercase text-[10px]">${dif < 0 ? 'Faltante' : 'Sobrante'}</span>`;
             }
-            updateStats();
+            updateUI();
         }
 
-        function updateStats() {
-            let ok = 0, faltan = 0, sobra = 0, sumAbsDif = 0, sumCajas = 0, revisados = 0;
-
+        function updateUI() {
+            let ok = 0, faltan = 0, sobra = 0, sumAbsDif = 0, sumCajas = 0;
             valores.forEach((v, i) => {
                 const boxOdoo = v.odoo / data[i].div;
                 const dif = v.real - boxOdoo;
                 if (v.odoo > 0 || v.real > 0) {
-                    revisados++;
                     if (Math.abs(dif) < 0.01) ok++;
                     else if (dif < 0) faltan++;
                     else sobra++;
@@ -249,26 +197,37 @@
                 sumAbsDif += Math.abs(dif);
                 sumCajas += boxOdoo;
             });
-
             myChart.data.datasets[0].data = [ok, faltan, sobra];
             myChart.update();
-
             const precision = sumCajas === 0 ? 100 : Math.max(0, 100 - (sumAbsDif / sumCajas * 100));
             document.getElementById('precisionKpi').innerText = precision.toFixed(1) + "%";
-            document.getElementById('totalFaltantes').innerText = faltan;
-            document.getElementById('totalRevisados').innerText = `${revisados}/${data.length}`;
-            
-            const indicator = document.getElementById('statusIndicator');
-            if(precision >= 98) {
-                indicator.className = "mt-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[9px] font-bold uppercase";
-                indicator.innerText = "Estado: Óptimo";
-            } else {
-                indicator.className = "mt-2 px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-[9px] font-bold uppercase";
-                indicator.innerText = "Estado: Revisión Requerida";
-            }
         }
 
-        initChart();
+        function exportarExcel() {
+            const rows = data.map((p, i) => {
+                const boxOdoo = valores[i].odoo / p.div;
+                const dif = valores[i].real - boxOdoo;
+                let estado = "--";
+                if(valores[i].odoo > 0 || valores[i].real > 0) {
+                    estado = Math.abs(dif) < 0.01 ? "CONFORME" : (dif < 0 ? "FALTANTE" : "SOBRANTE");
+                }
+                return {
+                    "Referencia": p.id,
+                    "Descripción": p.nom,
+                    "Factor": p.div,
+                    "Stock Odoo": valores[i].odoo,
+                    "Stock Físico": valores[i].real,
+                    "Diferencia Cajas": dif.toFixed(2),
+                    "Estado": estado
+                };
+            });
+            const ws = XLSX.utils.json_to_sheet(rows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Auditoría Inventario");
+            XLSX.writeFile(wb, `Reporte_Inventario_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        init();
     </script>
 </body>
 </html>
