@@ -3,82 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte Profesional de Inventario - Soporte Técnico</title>
+    <title>Soporte Técnico - Auditoría de Inventario</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Optimización para comodidad visual */
+        .row-active:focus-within { background-color: #f1f5f9 !important; }
+        input:focus { transform: scale(1.02); transition: all 0.2s; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
-            .shadow-2xl { shadow: none; border: 1px solid #ddd; }
-            .page-break { page-break-before: always; }
+            .shadow-xl { box-shadow: none !important; border: 1px solid #e2e8f0; }
+            .print-table { border: 1px solid #000; }
+            .sticky-header { position: static !important; }
         }
+        
+        .sticky-header { position: sticky; top: 0; z-index: 10; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="bg-slate-100 p-4 font-sans text-slate-900">
-    <div class="max-w-[1100px] mx-auto bg-white shadow-2xl rounded-xl overflow-hidden print:shadow-none">
+<body class="bg-[#f8fafc] p-2 md:p-6 font-sans text-slate-800">
+
+    <div class="max-w-[1200px] mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-200">
         
-        <!-- ENCABEZADO PROFESIONAL -->
-        <div class="bg-slate-900 p-8 flex justify-between items-center border-b-8 border-indigo-600">
-            <div>
-                <h1 class="text-white text-3xl font-black tracking-tighter uppercase">Informe de Auditoría de Inventario</h1>
-                <p class="text-indigo-400 font-mono text-sm uppercase tracking-widest">Departamento de Sistemas | Control de Activos</p>
+        <!-- CABECERA ESTILO DASHBOARD -->
+        <header class="bg-[#0f172a] p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b-4 border-indigo-500">
+            <div class="flex items-center gap-4">
+                <div class="bg-indigo-500 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-white text-xl font-black uppercase tracking-tight">Control de Existencias</h1>
+                    <p class="text-indigo-300 text-[10px] font-mono tracking-widest uppercase">Inventory System v3.0 | Soporte Técnico</p>
+                </div>
             </div>
-            <div class="text-right text-slate-400 text-xs">
-                <p id="fechaActual"></p>
-                <button onclick="window.print()" class="no-print mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full font-bold transition shadow-lg">
-                    IMPRIMIR REPORTE PDF
+            <div class="flex flex-col items-end gap-1">
+                <span id="fechaActual" class="text-slate-400 text-[11px] font-medium"></span>
+                <button onclick="window.print()" class="no-print bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold text-xs transition-all shadow-lg active:scale-95">
+                    GENERAR REPORTE PDF
                 </button>
             </div>
+        </header>
+
+        <!-- DASHBOARD DE MÉTRICAS -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-0 border-b border-slate-100">
+            <div class="p-6 flex flex-col items-center justify-center border-r border-slate-100 bg-slate-50/50">
+                <canvas id="chartEstados" style="max-height: 140px;"></canvas>
+            </div>
+            <div class="p-6 flex flex-col items-center justify-center border-r border-slate-100">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Precisión General</span>
+                <div class="flex items-baseline gap-1">
+                    <span id="precisionKpi" class="text-5xl font-black text-slate-800 tracking-tighter">100%</span>
+                </div>
+                <div id="statusIndicator" class="mt-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[9px] font-bold uppercase">Estado: Óptimo</div>
+            </div>
+            <div class="p-6 flex flex-col justify-center gap-4 bg-slate-50/50">
+                <div class="flex justify-between items-center">
+                    <span class="text-[11px] font-bold text-slate-500 uppercase">Faltantes Críticos:</span>
+                    <span id="totalFaltantes" class="text-xl font-black text-rose-600">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[11px] font-bold text-slate-500 uppercase">Ítems Revisados:</span>
+                    <span id="totalRevisados" class="text-xl font-black text-slate-700">0/50</span>
+                </div>
+            </div>
         </div>
 
-        <!-- DASHBOARD DE GRÁFICOS (Solo visibles si hay datos) -->
-        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50 border-b">
-            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase mb-4 text-center">Estado General de Productos</h3>
-                <canvas id="chartEstados" style="max-height: 200px;"></canvas>
-            </div>
-            <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm flex flex-col items-center justify-center">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase mb-2 text-center">Precisión del Conteo</h3>
-                <p id="precisionKpi" class="text-6xl font-black text-slate-800">100%</p>
-                <p class="text-[10px] text-slate-500 font-bold uppercase mt-2">Nivel de Confianza</p>
-            </div>
-        </div>
-
-        <!-- TABLA DE DATOS -->
-        <div class="p-0">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-800 text-white text-[10px] uppercase font-bold">
-                        <th class="p-4">Ref. Interna</th>
-                        <th class="p-4">Descripción</th>
+        <!-- TABLA DE TRABAJO -->
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead class="sticky-header shadow-sm">
+                    <tr class="bg-slate-800 text-white text-[10px] uppercase tracking-wider">
+                        <th class="p-4 text-left">Referencia</th>
+                        <th class="p-4 text-left">Producto</th>
                         <th class="p-4 text-center">Factor</th>
-                        <th class="p-4 w-24">Odoo</th>
-                        <th class="p-4 w-24">Físico</th>
+                        <th class="p-4 w-28">Odoo (kg/u)</th>
+                        <th class="p-4 w-28">Físico (kg/u)</th>
                         <th class="p-4 text-right">Dif. Cajas</th>
                         <th class="p-4 text-center">Estado</th>
                     </tr>
                 </thead>
-                <tbody id="cuerpoTabla" class="text-[12px] divide-y divide-slate-100">
-                    <!-- Dinámico -->
+                <tbody id="cuerpoTabla" class="divide-y divide-slate-100 text-[12px]">
+                    <!-- Datos inyectados por JS -->
                 </tbody>
             </table>
         </div>
 
-        <!-- SECCIÓN DE FIRMAS (Para el PDF) -->
-        <div class="p-12 grid grid-cols-2 gap-20 mt-10 border-t bg-slate-50">
-            <div class="text-center">
-                <div class="border-t-2 border-slate-300 pt-2 text-slate-600 font-bold uppercase text-[10px]">
-                    Firma Responsable Bodega
+        <!-- FOOTER / FIRMAS -->
+        <footer class="p-10 bg-slate-50 border-t border-slate-200">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-[800px] mx-auto">
+                <div class="text-center">
+                    <div class="h-[1px] bg-slate-300 mb-3 mx-auto w-48"></div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Responsable de Inventario</p>
+                </div>
+                <div class="text-center">
+                    <div class="h-[1px] bg-slate-300 mb-3 mx-auto w-48"></div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Soporte Técnico / Auditoría</p>
                 </div>
             </div>
-            <div class="text-center">
-                <div class="border-t-2 border-slate-300 pt-2 text-slate-600 font-bold uppercase text-[10px]">
-                    Firma Soporte Técnico / Auditoría
-                </div>
-            </div>
-        </div>
+        </footer>
     </div>
 
     <script>
@@ -135,28 +161,30 @@
             { id: "PTKT3148", nom: "VEGAN ROLL GRANEL CAJA 100 UNID", div: 1 }
         ];
 
-        document.getElementById('fechaActual').innerText = new Date().toLocaleString();
+        document.getElementById('fechaActual').innerText = new Date().toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'short' });
         const tbody = document.getElementById('cuerpoTabla');
         let valores = data.map(() => ({ odoo: 0, real: 0 }));
         let myChart;
 
-        // Renderizado inicial
+        // Renderizado
         data.forEach((p, i) => {
             const row = `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-4 font-mono font-bold text-indigo-600">${p.id}</td>
-                    <td class="p-4 font-semibold text-slate-700 uppercase">${p.nom}</td>
-                    <td class="p-4 text-center font-bold text-slate-400">${p.div}</td>
-                    <td class="p-4">
-                        <input type="number" oninput="calc(${i}, this.value, 'odoo')" class="no-print w-full bg-slate-100 border border-slate-200 rounded px-2 py-1 text-right focus:bg-white focus:border-indigo-500 outline-none">
-                        <span class="hidden print:block text-right">${valores[i].odoo}</span>
+                <tr class="row-active transition-colors group">
+                    <td class="p-4 font-mono font-bold text-indigo-500 bg-slate-50/30">${p.id}</td>
+                    <td class="p-4 font-bold text-slate-600 uppercase tracking-tight">${p.nom}</td>
+                    <td class="p-4 text-center font-bold text-slate-400 border-x border-slate-50">${p.div}</td>
+                    <td class="p-3">
+                        <input type="number" step="any" oninput="calc(${i}, this.value, 'odoo')" class="no-print w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-right font-bold text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                        <span class="hidden print:block text-right font-bold">${valores[i].odoo}</span>
                     </td>
-                    <td class="p-4">
-                        <input type="number" oninput="calc(${i}, this.value, 'real')" class="no-print w-full bg-slate-100 border border-slate-200 rounded px-2 py-1 text-right focus:bg-white focus:border-indigo-500 outline-none">
-                        <span class="hidden print:block text-right">${valores[i].real}</span>
+                    <td class="p-3">
+                        <input type="number" step="any" oninput="calc(${i}, this.value, 'real')" class="no-print w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-right font-bold text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+                        <span class="hidden print:block text-right font-bold">${valores[i].real}</span>
                     </td>
-                    <td class="p-4 text-right font-black" id="dif-${i}">0.00</td>
-                    <td class="p-4 text-center" id="stat-${i}">--</td>
+                    <td class="p-4 text-right font-black text-sm" id="dif-${i}">0.00</td>
+                    <td class="p-4 text-center" id="stat-${i}">
+                        <span class="text-slate-300 font-black">--</span>
+                    </td>
                 </tr>
             `;
             tbody.insertAdjacentHTML('beforeend', row);
@@ -167,60 +195,77 @@
             myChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['OK', 'Faltantes', 'Sobrantes'],
+                    labels: ['CONFORME', 'FALTANTE', 'SOBRANTE'],
                     datasets: [{
                         data: [0, 0, 0],
-                        backgroundColor: ['#10b981', '#ef4444', '#6366f1'],
+                        backgroundColor: ['#10b981', '#f43f5e', '#6366f1'],
+                        hoverOffset: 4,
                         borderWidth: 0
                     }]
                 },
-                options: { cutout: '70%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, weight: 'bold' } } } } }
+                options: { 
+                    cutout: '75%', 
+                    plugins: { 
+                        legend: { display: true, position: 'bottom', labels: { boxWidth: 8, font: { size: 9, weight: '900' }, padding: 15 } } 
+                    } 
+                }
             });
         }
 
         function calc(i, val, tipo) {
             valores[i][tipo] = parseFloat(val) || 0;
-            const inputElements = document.querySelectorAll(`span.print\\:block`);
-            inputElements[i * 2 + (tipo === 'odoo' ? 0 : 1)].innerText = val || 0;
+            const printSpans = document.querySelectorAll(`span.print\\:block`);
+            printSpans[i * 2 + (tipo === 'odoo' ? 0 : 1)].innerText = val || 0;
 
-            const boxesOdoo = valores[i].odoo / data[i].div;
-            const dif = valores[i].real - boxesOdoo;
+            const boxOdoo = valores[i].odoo / data[i].div;
+            const dif = valores[i].real - boxOdoo;
             
             const elDif = document.getElementById(`dif-${i}`);
             elDif.innerText = dif.toFixed(2);
-            elDif.className = `p-4 text-right font-black ${dif < -0.01 ? 'text-rose-600' : (dif > 0.01 ? 'text-indigo-600' : 'text-slate-700')}`;
+            elDif.className = `p-4 text-right font-black ${dif < -0.01 ? 'text-rose-600' : (dif > 0.01 ? 'text-indigo-600' : 'text-slate-800')}`;
 
             const elStat = document.getElementById(`stat-${i}`);
             if (Math.abs(dif) < 0.01) {
-                elStat.innerHTML = '<span class="text-emerald-600 font-black italic">CONFORME</span>';
+                elStat.innerHTML = '<span class="text-emerald-500 font-black text-[10px] bg-emerald-50 px-2 py-1 rounded border border-emerald-100 uppercase">Ok</span>';
             } else {
-                elStat.innerHTML = `<span class="${dif < 0 ? 'text-rose-600' : 'text-indigo-600'} font-black italic">${dif < 0 ? 'DESVÍO (-)' : 'SOBRANTE (+)'}</span>`;
+                const color = dif < 0 ? 'rose' : 'indigo';
+                elStat.innerHTML = `<span class="text-${color}-600 font-black text-[10px] bg-${color}-50 px-2 py-1 rounded border border-${color}-100 uppercase">${dif < 0 ? 'Faltante' : 'Sobrante'}</span>`;
             }
-            updateUI();
+            updateStats();
         }
 
-        function updateUI() {
-            let ok = 0, faltan = 0, sobra = 0, sumAbsDif = 0, sumCajas = 0;
+        function updateStats() {
+            let ok = 0, faltan = 0, sobra = 0, sumAbsDif = 0, sumCajas = 0, revisados = 0;
 
             valores.forEach((v, i) => {
-                const boxesOdoo = v.odoo / data[i].div;
-                const dif = v.real - boxesOdoo;
+                const boxOdoo = v.odoo / data[i].div;
+                const dif = v.real - boxOdoo;
                 if (v.odoo > 0 || v.real > 0) {
+                    revisados++;
                     if (Math.abs(dif) < 0.01) ok++;
                     else if (dif < 0) faltan++;
                     else sobra++;
                 }
                 sumAbsDif += Math.abs(dif);
-                sumCajas += boxesOdoo;
+                sumCajas += boxOdoo;
             });
 
             myChart.data.datasets[0].data = [ok, faltan, sobra];
             myChart.update();
 
             const precision = sumCajas === 0 ? 100 : Math.max(0, 100 - (sumAbsDif / sumCajas * 100));
-            const elPrec = document.getElementById('precisionKpi');
-            elPrec.innerText = precision.toFixed(1) + "%";
-            elPrec.className = `text-6xl font-black ${precision < 95 ? 'text-rose-600' : 'text-slate-800'}`;
+            document.getElementById('precisionKpi').innerText = precision.toFixed(1) + "%";
+            document.getElementById('totalFaltantes').innerText = faltan;
+            document.getElementById('totalRevisados').innerText = `${revisados}/${data.length}`;
+            
+            const indicator = document.getElementById('statusIndicator');
+            if(precision >= 98) {
+                indicator.className = "mt-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[9px] font-bold uppercase";
+                indicator.innerText = "Estado: Óptimo";
+            } else {
+                indicator.className = "mt-2 px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-[9px] font-bold uppercase";
+                indicator.innerText = "Estado: Revisión Requerida";
+            }
         }
 
         initChart();
