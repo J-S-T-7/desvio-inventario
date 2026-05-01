@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auditoría de Stock Pro - Juan</title>
+    <title>Auditoría de Stock Pro - Reporte Excel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Librería de Excel Robusta -->
+    <!-- Librería Excel Certificada -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         .row-active:focus-within { background-color: #f8fafc !important; }
@@ -28,14 +28,14 @@
                 </div>
                 <div>
                     <h1 class="text-white text-xl font-black uppercase tracking-tight">Auditoría de Stock</h1>
-                    <p class="text-indigo-300 text-[10px] font-mono tracking-widest uppercase">Mesa de Ayuda | Soporte IT</p>
+                    <p class="text-indigo-300 text-[10px] font-mono tracking-widest uppercase">Sistema de Gestión de Inventario</p>
                 </div>
             </div>
             <div class="flex gap-2 no-print">
-                <button onclick="exportarExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition shadow-lg flex items-center gap-2">
-                    EXCEL
+                <button onclick="exportarExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-bold text-xs transition shadow-lg flex items-center gap-2">
+                    DESCARGAR EXCEL PROFESIONAL
                 </button>
-                <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition shadow-lg flex items-center gap-2">
+                <button onclick="window.print()" class="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-bold text-xs transition shadow-lg">
                     PDF
                 </button>
             </div>
@@ -45,10 +45,10 @@
             <div class="p-6 flex flex-col items-center justify-center border-r border-slate-100">
                 <canvas id="chartEstados" style="max-height: 120px;"></canvas>
             </div>
-            <div class="p-6 flex flex-col items-center justify-center">
-                <span class="text-[10px] font-black text-slate-400 uppercase mb-1">Precisión de Inventario</span>
+            <div class="p-6 flex flex-col items-center justify-center text-center">
+                <span class="text-[10px] font-black text-slate-400 uppercase mb-1">Precisión General</span>
                 <span id="precisionKpi" class="text-6xl font-black text-slate-800 tracking-tighter">100%</span>
-                <p id="fechaActual" class="text-[10px] text-slate-400 mt-2 font-mono uppercase"></p>
+                <p class="text-[10px] text-slate-400 mt-2 font-mono uppercase">Cálculo basado en desviación absoluta</p>
             </div>
         </div>
 
@@ -58,9 +58,8 @@
                     <tr class="bg-slate-800 text-white text-[10px] uppercase">
                         <th class="p-4 text-left">Ref.</th>
                         <th class="p-4 text-left">Producto</th>
-                        <th class="p-4 text-center">Factor</th>
-                        <th class="p-4 w-24">Odoo</th>
-                        <th class="p-4 w-24">Físico</th>
+                        <th class="p-4 w-32">Stock Odoo</th>
+                        <th class="p-4 w-32">Stock Físico</th>
                         <th class="p-4 text-right">Dif. Cajas</th>
                         <th class="p-4 text-center">Estado</th>
                     </tr>
@@ -71,7 +70,6 @@
     </div>
 
     <script>
-        // LISTA COMPLETA RESTAURADA
         const data = [
             { id: "PTEM2039", nom: "BIFE VEG - Pack", div: 12 },
             { id: "PTEM1179", nom: "CHAPARRITA SALCHI ROLL", div: 20 },
@@ -129,22 +127,14 @@
         let myChart;
 
         function init() {
-            document.getElementById('fechaActual').innerText = new Date().toLocaleDateString();
             const tbody = document.getElementById('cuerpoTabla');
             data.forEach((p, i) => {
                 tbody.insertAdjacentHTML('beforeend', `
                     <tr class="row-active transition-colors">
                         <td class="p-4 font-mono font-bold text-indigo-500">${p.id}</td>
                         <td class="p-4 font-semibold text-slate-600 uppercase">${p.nom}</td>
-                        <td class="p-4 text-center font-bold text-slate-400 border-x border-slate-50">${p.div}</td>
-                        <td class="p-2">
-                            <input type="number" oninput="calc(${i}, this.value, 'odoo')" class="no-print w-full bg-slate-50 border rounded p-2 text-right outline-none focus:border-indigo-500">
-                            <span class="hidden print:block text-right">${valores[i].odoo}</span>
-                        </td>
-                        <td class="p-2">
-                            <input type="number" oninput="calc(${i}, this.value, 'real')" class="no-print w-full bg-slate-50 border rounded p-2 text-right outline-none focus:border-indigo-500">
-                            <span class="hidden print:block text-right">${valores[i].real}</span>
-                        </td>
+                        <td class="p-2"><input type="number" placeholder="Unidades" oninput="calc(${i}, this.value, 'odoo')" class="w-full bg-slate-50 border rounded p-2 text-right outline-none focus:border-indigo-500"></td>
+                        <td class="p-2"><input type="number" placeholder="Cajas" oninput="calc(${i}, this.value, 'real')" class="w-full bg-slate-50 border rounded p-2 text-right outline-none focus:border-indigo-500"></td>
                         <td class="p-4 text-right font-black" id="dif-${i}">0.00</td>
                         <td class="p-4 text-center" id="stat-${i}"><span class="text-slate-300 italic">--</span></td>
                     </tr>
@@ -161,26 +151,21 @@
 
         function calc(i, val, tipo) {
             valores[i][tipo] = parseFloat(val) || 0;
-            const printSpans = document.querySelectorAll(`span.print\\:block`);
-            if(printSpans[i * 2 + (tipo === 'odoo' ? 0 : 1)]) {
-                printSpans[i * 2 + (tipo === 'odoo' ? 0 : 1)].innerText = val || 0;
-            }
-
             const boxOdoo = valores[i].odoo / data[i].div;
             const dif = valores[i].real - boxOdoo;
             document.getElementById(`dif-${i}`).innerText = dif.toFixed(2);
             const elStat = document.getElementById(`stat-${i}`);
             
             if (Math.abs(dif) < 0.01) {
-                elStat.innerHTML = '<span class="text-emerald-500 font-bold uppercase text-[10px]">Ok</span>';
+                elStat.innerHTML = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold uppercase">Ok</span>';
             } else {
-                elStat.innerHTML = `<span class="text-${dif < 0 ? 'rose' : 'indigo'}-500 font-bold uppercase text-[10px]">${dif < 0 ? 'Faltante' : 'Sobrante'}</span>`;
+                elStat.innerHTML = `<span class="bg-${dif < 0 ? 'rose' : 'indigo'}-100 text-${dif < 0 ? 'rose' : 'indigo'}-700 px-2 py-1 rounded text-[10px] font-bold uppercase">${dif < 0 ? 'Faltante' : 'Sobrante'}</span>`;
             }
             updateUI();
         }
 
         function updateUI() {
-            let ok = 0, faltan = 0, sobra = 0, sumAbsDif = 0, sumCajas = 0;
+            let ok = 0, faltan = 0, sobra = 0, sumAbsDif = 0, sumCajasOdoo = 0;
             valores.forEach((v, i) => {
                 const boxOdoo = v.odoo / data[i].div;
                 const dif = v.real - boxOdoo;
@@ -188,13 +173,13 @@
                     if (Math.abs(dif) < 0.01) ok++;
                     else if (dif < 0) faltan++;
                     else sobra++;
+                    sumAbsDif += Math.abs(dif);
+                    sumCajasOdoo += boxOdoo;
                 }
-                sumAbsDif += Math.abs(dif);
-                sumCajas += boxOdoo;
             });
             myChart.data.datasets[0].data = [ok, faltan, sobra];
             myChart.update();
-            const precision = sumCajas === 0 ? 100 : Math.max(0, 100 - (sumAbsDif / sumCajas * 100));
+            const precision = sumCajasOdoo === 0 ? 100 : Math.max(0, 100 - (sumAbsDif / sumCajasOdoo * 100));
             document.getElementById('precisionKpi').innerText = precision.toFixed(1) + "%";
         }
 
@@ -202,20 +187,31 @@
             const rows = data.map((p, i) => {
                 const boxOdoo = valores[i].odoo / p.div;
                 const dif = valores[i].real - boxOdoo;
+                const desviacion = boxOdoo === 0 ? 0 : (dif / boxOdoo);
+                
                 return {
-                    "REF": p.id,
+                    "REFERENCIA": p.id,
                     "PRODUCTO": p.nom,
-                    "FACTOR": p.div,
-                    "ODOO": valores[i].odoo,
-                    "FISICO": valores[i].real,
+                    "ODOO (CAJAS)": parseFloat(boxOdoo.toFixed(2)),
+                    "FISICO (CAJAS)": valores[i].real,
                     "DIFERENCIA": parseFloat(dif.toFixed(2)),
+                    "DESVIACION %": parseFloat((desviacion * 100).toFixed(2)) + "%",
                     "ESTADO": Math.abs(dif) < 0.01 ? "OK" : (dif < 0 ? "FALTANTE" : "SOBRANTE")
                 };
             });
+
             const ws = XLSX.utils.json_to_sheet(rows);
+            
+            // Estilo: Ancho de columnas
+            ws['!cols'] = [
+                {wch: 15}, {wch: 45}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 15}
+            ];
+
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Auditoria");
-            XLSX.writeFile(wb, `Inventario_${new Date().toISOString().split('T')[0]}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "Auditoria de Inventario");
+            
+            const hoy = new Date().toISOString().split('T')[0];
+            XLSX.writeFile(wb, `Reporte_Stock_Juan_${hoy}.xlsx`);
         }
 
         init();
